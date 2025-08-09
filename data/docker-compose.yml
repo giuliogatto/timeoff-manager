@@ -1,0 +1,26 @@
+services:
+  timeoff-manager-data:
+    image: mysql:8.0
+    container_name: timeoff-manager-data
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_password}
+      MYSQL_DATABASE: timeoff_manager_db
+      MYSQL_USER: timeoff_manager
+      MYSQL_PASSWORD: ${MYSQL_PASS:-time_off_manager}
+    ports:
+      - "3306:3306"
+    volumes:
+      - timeoff_manager_data:/var/lib/mysql
+      - ./migrations:/docker-entrypoint-initdb.d
+    networks:
+      - timeoff_manager_network
+    command: --default-authentication-plugin=mysql_native_password
+
+networks:
+  timeoff_manager_network:
+    driver: bridge
+
+volumes:
+  timeoff_manager_data:
+    driver: local
