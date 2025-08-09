@@ -1,0 +1,20 @@
+services:
+  timeoff-manager-api:
+    image: python:3.11-slim
+    container_name: timeoff-manager-api
+    restart: unless-stopped
+    working_dir: /app
+    environment:
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+      - DATABASE_URL=mysql+pymysql://timeoff_manager:${MYSQL_PASS:-time_off_manager}@host.docker.internal:3306/timeoff_manager_db
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    command: >
+      sh -c "pip install fastapi uvicorn pymysql cryptography sqlalchemy python-multipart &&
+             uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
+
+
+
