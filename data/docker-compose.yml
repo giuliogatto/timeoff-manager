@@ -17,6 +17,23 @@ services:
       - timeoff_manager_network
     command: --default-authentication-plugin=mysql_native_password
 
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: timeoff-manager-phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: timeoff-manager-data
+      PMA_PORT: 3306
+      PMA_USER: ${MYSQL_USER:-timeoff_manager}
+      PMA_PASSWORD: ${MYSQL_PASS:-time_off_manager}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_password}
+    ports:
+      - "8080:80"
+    networks:
+      - timeoff_manager_network
+    depends_on:
+      - timeoff-manager-data
+
 networks:
   timeoff_manager_network:
     driver: bridge
