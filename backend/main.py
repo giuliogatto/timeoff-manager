@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from api.leave_requests import router as leave_requests_router
 from api.authentication import router as auth_router
 from api.profile import router as profile_router
@@ -6,6 +7,15 @@ from api.google_oauth import router as google_oauth_router
 from middleware.auth import AuthMiddleware
 
 app = FastAPI(title="Timeoff Manager API")
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Add authentication middleware
 app.add_middleware(AuthMiddleware)
