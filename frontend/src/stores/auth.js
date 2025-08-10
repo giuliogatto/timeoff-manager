@@ -73,9 +73,14 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const initializeAuth = () => {
+    console.log('Initializing auth...')
+    console.log('Token from localStorage:', token.value)
     // Set authorization header if token exists
     if (token.value) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token.value}`
+      console.log('Authorization header set:', axios.defaults.headers.common['Authorization'])
+    } else {
+      console.log('No token found, not setting Authorization header')
     }
   }
 

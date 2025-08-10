@@ -214,8 +214,18 @@ const newRequest = ref({
 })
 
 onMounted(async () => {
+  console.log('LeaveRequests mounted')
+  console.log('Auth store state:', {
+    isAuthenticated: authStore.isAuthenticated,
+    token: authStore.token,
+    user: authStore.user
+  })
+  
   if (authStore.isAuthenticated) {
+    console.log('User is authenticated, fetching leave requests...')
     await leaveRequestsStore.fetchLeaveRequests()
+  } else {
+    console.log('User is not authenticated')
   }
 })
 

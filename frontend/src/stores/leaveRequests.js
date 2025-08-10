@@ -28,10 +28,14 @@ export const useLeaveRequestsStore = defineStore('leaveRequests', () => {
     loading.value = true
     error.value = null
     try {
+      console.log('Fetching leave requests from:', `${backendUrl}leave_requests`)
+      console.log('Authorization header:', axios.defaults.headers.common['Authorization'])
       const response = await axios.get(`${backendUrl}leave_requests`)
+      console.log('Leave requests response:', response.data)
       leaveRequests.value = response.data
       return response.data
     } catch (err) {
+      console.error('Error fetching leave requests:', err)
       error.value = err.response?.data?.detail || 'Failed to fetch leave requests'
       throw err
     } finally {
