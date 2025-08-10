@@ -20,7 +20,7 @@ router = APIRouter()
 
 @router.get("/leave_requests")
 def get_leave_requests(request: Request):
-    """Get all leave requests from the database"""
+    """Get leave requests based on user role: managers see all, users see only their own"""
     try:
         # Access authenticated user from middleware
         user = request.state.user
@@ -28,7 +28,16 @@ def get_leave_requests(request: Request):
             raise HTTPException(status_code=401, detail="Authentication required")
         
         db = next(get_db())
-        leave_requests = db.query(LeaveRequest).all()
+        
+        # Filter based on user role
+        if user["role"] == "manager":
+            # Managers can see all leave requests
+            leave_requests = db.query(LeaveRequest).all()
+            message = "All leave requests retrieved (manager view)"
+        else:
+            # Regular users can only see their own leave requests
+            leave_requests = db.query(LeaveRequest).filter(LeaveRequest.user_id == user["id"]).all()
+            message = "Your leave requests retrieved (user view)"
         
         # Convert to dictionary format
         result = []
@@ -52,6 +61,7 @@ def get_leave_requests(request: Request):
         return {
             "leave_requests": result, 
             "count": len(result),
+            "message": message,
             "authenticated_user": {
                 "id": user["id"],
                 "name": user["name"],
