@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Date, Text, DateTime, Enum, ForeignKey
+from sqlalchemy import Column, Integer, String, Date, Text, DateTime, Enum, ForeignKey, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 import enum
@@ -36,6 +36,7 @@ class User(Base):
     auth_provider = Column(Enum(AuthProviderEnum), default=AuthProviderEnum.local)
     role = Column(Enum(RoleEnum), default=RoleEnum.user)
     unit_id = Column(Integer, ForeignKey("units.id"))
+    validated = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 

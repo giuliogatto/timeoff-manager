@@ -13,7 +13,7 @@ services:
     volumes:
       - .:/app
     command: >
-      sh -c "pip install fastapi uvicorn pymysql cryptography sqlalchemy python-multipart &&
+      sh -c "pip install fastapi uvicorn pymysql cryptography sqlalchemy python-multipart bcrypt pyjwt requests &&
              uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
 
 
