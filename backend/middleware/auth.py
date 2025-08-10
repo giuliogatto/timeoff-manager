@@ -20,6 +20,7 @@ PUBLIC_ROUTES = {
     "/google/login",
     "/google/callback",
     "/google/auth-url",
+    "/ws/status",
     "/docs",
     "/redoc",
     "/openapi.json"

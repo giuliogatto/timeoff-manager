@@ -5,6 +5,7 @@ from database import get_db
 from pydantic import BaseModel
 from datetime import date, datetime
 from typing import Optional, Union
+from websocket_manager import manager
 
 # Pydantic models for leave requests
 class CreateLeaveRequest(BaseModel):
@@ -22,6 +23,92 @@ class UpdateLeaveRequestStatus(BaseModel):
     review_comment: Optional[str] = None
 
 router = APIRouter()
+
+async def send_leave_request_notification(request_id: int, status: str, reviewer_name: str, user_id: int, db: Session):
+    """Send WebSocket notification when leave request status changes"""
+    try:
+        # Get the leave request details
+        leave_request = db.query(LeaveRequest).filter(LeaveRequest.id == request_id).first()
+        if not leave_request:
+            return
+        
+        # Get user information
+        user = db.query(User).filter(User.id == leave_request.user_id).first()
+        if not user:
+            return
+        
+        # Prepare notification data
+        notification_data = {
+            "request_id": request_id,
+            "request_type": leave_request.request_type,
+            "status": status,
+            "reviewer_name": reviewer_name,
+            "timestamp": datetime.utcnow().isoformat(),
+            "details": {
+                "start_date": leave_request.start_date.isoformat() if leave_request.start_date else None,
+                "end_date": leave_request.end_date.isoformat() if leave_request.end_date else None,
+                "start_datetime": leave_request.start_datetime.isoformat() if leave_request.start_datetime else None,
+                "end_datetime": leave_request.end_datetime.isoformat() if leave_request.end_datetime else None,
+                "reason": leave_request.reason
+            }
+        }
+        
+        # Send notification to the request owner
+        await manager.send_notification_to_user(
+            leave_request.user_id,
+            "leave_request_status_changed",
+            notification_data
+        )
+        
+        # Send notification to managers about the status change
+        await manager.broadcast_to_managers({
+            "type": "manager_notification",
+            "notification_type": "leave_request_status_changed",
+            "data": {
+                **notification_data,
+                "user_name": user.name,
+                "user_email": user.email
+            }
+        })
+        
+    except Exception as e:
+        print(f"Error sending notification: {e}")
+
+async def send_new_request_notification(request_id: int, user_name: str, user_id: int, request_type: str, db: Session):
+    """Send WebSocket notification when a new leave request is created"""
+    try:
+        # Get the leave request details
+        leave_request = db.query(LeaveRequest).filter(LeaveRequest.id == request_id).first()
+        if not leave_request:
+            return
+        
+        # Prepare notification data
+        notification_data = {
+            "request_id": request_id,
+            "request_type": request_type,
+            "user_name": user_name,
+            "user_id": user_id,
+            "timestamp": datetime.utcnow().isoformat(),
+            "details": {
+                "start_date": leave_request.start_date.isoformat() if leave_request.start_date else None,
+                "end_date": leave_request.end_date.isoformat() if leave_request.end_date else None,
+                "start_datetime": leave_request.start_datetime.isoformat() if leave_request.start_datetime else None,
+                "end_datetime": leave_request.end_datetime.isoformat() if leave_request.end_datetime else None,
+                "reason": leave_request.reason
+            }
+        }
+        
+        # Send notification to all managers about the new request
+        await manager.broadcast_to_managers({
+            "type": "manager_notification",
+            "notification_type": "new_leave_request",
+            "data": notification_data
+        })
+        
+        print(f"Sent new request notification to managers: {notification_data}")
+        
+    except Exception as e:
+        print(f"Error sending new request notification: {e}")
 
 @router.get("/leave_requests")
 def get_leave_requests(request: Request):
@@ -81,7 +168,7 @@ def get_leave_requests(request: Request):
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 @router.post("/leave_requests")
-def create_leave_request(request: Request, leave_data: CreateLeaveRequest):
+async def create_leave_request(request: Request, leave_data: CreateLeaveRequest):
     """Create a new leave request (timeoff or permission) for the authenticated user"""
     try:
         # Access authenticated user from middleware
@@ -164,6 +251,15 @@ def create_leave_request(request: Request, leave_data: CreateLeaveRequest):
                 "end_datetime": new_leave_request.end_datetime.isoformat()
             })
         
+        # Send WebSocket notification for new request creation
+        await send_new_request_notification(
+            request_id=new_leave_request.id,
+            user_name=user["name"],
+            user_id=user["id"],
+            request_type=leave_data.request_type,
+            db=db
+        )
+        
         return response_data
         
     except HTTPException:
@@ -173,7 +269,7 @@ def create_leave_request(request: Request, leave_data: CreateLeaveRequest):
         raise HTTPException(status_code=500, detail=f"Failed to create leave request: {str(e)}")
 
 @router.put("/leave_requests/{request_id}/status")
-def update_leave_request_status(request_id: int, request: Request, status_data: UpdateLeaveRequestStatus):
+async def update_leave_request_status(request_id: int, request: Request, status_data: UpdateLeaveRequestStatus):
     """Update leave request status (manager only)"""
     try:
         # Access authenticated user from middleware
@@ -204,6 +300,15 @@ def update_leave_request_status(request_id: int, request: Request, status_data: 
         
         db.commit()
         db.refresh(leave_request)
+        
+        # Send WebSocket notification
+        await send_leave_request_notification(
+            request_id=request_id,
+            status=status_data.status,
+            reviewer_name=user["name"],
+            user_id=user["id"],
+            db=db
+        )
         
         # Return the updated leave request
         response_data = {

@@ -5,6 +5,7 @@
       <template v-if="authStore.isAuthenticated">
         | <router-link to="/leave_requests">Leave Requests</router-link>
         | <span class="user-info">Welcome, {{ authStore.user?.name }}</span>
+        | <NotificationCenter />
         | <button @click="logout" class="logout-btn">Logout</button>
       </template>
       <template v-else>
@@ -21,6 +22,7 @@
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from './stores/auth'
+import NotificationCenter from './components/NotificationCenter.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
