@@ -37,6 +37,7 @@ class User(Base):
     role = Column(Enum(RoleEnum), default=RoleEnum.user)
     unit_id = Column(Integer, ForeignKey("units.id"))
     validated = Column(Boolean, default=False)
+    confirmation_token = Column(String(255), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 

@@ -41,8 +41,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 BREVO_TOKEN = os.getenv("BREVO_TOKEN")
 BREVO_API_URL = "https://api.brevo.com/v3/smtp/email"
 
-# Store confirmation tokens (in production, use Redis or database)
-confirmation_tokens = {}
+# Confirmation tokens are stored in the users table
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
@@ -167,10 +166,20 @@ def register(register_data: RegisterRequest, db: Session = Depends(get_db)):
         
         # Generate confirmation token
         confirmation_token = secrets.token_urlsafe(32)
-        confirmation_tokens[confirmation_token] = new_user.id
+        new_user.confirmation_token = confirmation_token
         
-        # Send confirmation email
-        send_confirmation_email(register_data.email, register_data.name, confirmation_token)
+        db.commit()
+        db.refresh(new_user)
+        
+        # Send confirmation email (skip for testing if no BREVO_TOKEN)
+        try:
+            send_confirmation_email(register_data.email, register_data.name, confirmation_token)
+        except HTTPException as e:
+            if "Email service not configured" in str(e.detail):
+                # For testing purposes, just log the token
+                print(f"Confirmation token for {register_data.email}: {confirmation_token}")
+            else:
+                raise e
         
         return {
             "message": "Registration successful. Please check your email to confirm your account.",
@@ -187,29 +196,21 @@ def register(register_data: RegisterRequest, db: Session = Depends(get_db)):
 def register_confirm(confirm_data: RegisterConfirmRequest, db: Session = Depends(get_db)):
     """Register confirmation endpoint - validate user account"""
     try:
-        # Check if token exists
-        if confirm_data.token not in confirmation_tokens:
-            raise HTTPException(status_code=400, detail="Invalid or expired confirmation token")
-        
-        user_id = confirmation_tokens[confirm_data.token]
-        
-        # Find user
-        user = db.query(User).filter(User.id == user_id).first()
+        # Find user by confirmation token
+        user = db.query(User).filter(User.confirmation_token == confirm_data.token).first()
         if not user:
-            raise HTTPException(status_code=404, detail="User not found")
+            raise HTTPException(status_code=400, detail="Invalid or expired confirmation token")
         
         # Check if already validated
         if user.validated:
             raise HTTPException(status_code=400, detail="Account already validated")
         
-        # Validate user
+        # Validate user and clear token
         user.validated = True
+        user.confirmation_token = None
         user.updated_at = datetime.utcnow()
         
         db.commit()
-        
-        # Remove token from storage
-        del confirmation_tokens[confirm_data.token]
         
         return {
             "message": "Account confirmed successfully. You can now login.",

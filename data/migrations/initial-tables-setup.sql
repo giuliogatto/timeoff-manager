@@ -14,6 +14,7 @@ CREATE TABLE users (
     role ENUM('user', 'manager') DEFAULT 'user',
     unit_id INT,
     validated BOOLEAN DEFAULT FALSE,
+    confirmation_token VARCHAR(255) NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (unit_id) REFERENCES units(id) ON DELETE SET NULL
