@@ -169,10 +169,105 @@ docker-compose logs -f timeoff-manager-data
 
 ## 🧪 Testing
 
+### Manual Testing
+
 1. **Start all services**: `docker-compose up -d`
 2. **Access frontend**: http://localhost:3000
 3. **Login as admin**: `admin@example.com` / `password`
 4. **Create test requests** and test the workflow
+
+### Backend Tests
+
+The backend includes comprehensive automated tests using pytest. All tests run inside the Docker container to ensure consistency.
+
+#### Prerequisites
+- Backend service must be running: `docker-compose up -d` (from root) or `cd backend && docker-compose up -d`
+- Test dependencies are automatically installed in the container
+
+#### Running Tests
+
+##### Quick Tests (Recommended for Development)
+```bash
+# From the backend directory
+./run_tests_quick.sh
+
+# Or manually
+docker exec timeoff-manager-api python -m pytest tests/ -v --tb=no
+```
+
+##### Full Tests with Coverage Report
+```bash
+# From the backend directory
+./run_tests.sh
+
+# Or manually
+docker exec timeoff-manager-api python -m pytest tests/ --cov=. --cov-report=html --cov-report=term
+```
+
+##### Individual Test Files
+```bash
+# Test specific modules
+docker exec timeoff-manager-api python -m pytest tests/test_authentication.py -v
+docker exec timeoff-manager-api python -m pytest tests/test_leave_requests.py -v
+docker exec timeoff-manager-api python -m pytest tests/test_profile.py -v
+docker exec timeoff-manager-api python -m pytest tests/test_main.py -v
+
+# Test specific test methods
+docker exec timeoff-manager-api python -m pytest tests/test_leave_requests.py::TestLeaveRequests::test_create_timeoff_request -v
+```
+
+##### Test with Detailed Output
+```bash
+# Show full traceback for failures
+docker exec timeoff-manager-api python -m pytest tests/ -v --tb=long
+
+# Show print statements (for debugging)
+docker exec timeoff-manager-api python -m pytest tests/ -v -s
+```
+
+#### Test Coverage
+
+Current test coverage includes:
+- ✅ **Authentication** (7 tests): Registration, login, email confirmation
+- ✅ **Leave Requests** (15 tests): CRUD operations, role-based access, validation
+- ✅ **Profile** (3 tests): User profile retrieval
+- ✅ **Main API** (4 tests): Health checks, documentation endpoints
+
+**Total: 29 tests with 84%+ coverage**
+
+#### Test Architecture
+
+- **Database**: Uses in-memory SQLite for fast, isolated tests
+- **Authentication**: JWT tokens generated for test users
+- **Fixtures**: Reusable test data (users, managers, units)
+- **Mocking**: External API calls (Google OAuth) are mocked
+- **Isolation**: Each test runs in a clean database state
+
+#### Test Categories
+
+| Category | Tests | Description |
+|----------|-------|-------------|
+| **Unit Tests** | 25 | Individual function/endpoint testing |
+| **Integration Tests** | 4 | End-to-end workflow testing |
+| **Authentication** | 7 | Login, registration, JWT validation |
+| **Authorization** | 8 | Role-based access control |
+| **Validation** | 6 | Input validation and error handling |
+
+#### Test Configuration
+
+- **Framework**: pytest with async support
+- **Database**: SQLite in-memory for speed
+- **Coverage**: pytest-cov with HTML reports
+- **Markers**: @pytest.mark.slow, @pytest.mark.integration
+- **Configuration**: `pytest.ini` in backend directory
+
+#### Known Issues & Next Steps
+
+- ⚠️ Google OAuth tests removed due to external API dependencies
+- 🔄 WebSocket tests not yet implemented
+- 📈 Target: 90%+ test coverage
+- 🧪 Add more edge case tests
+- 🔍 Improve test data factories
 
 ## 🛠️ Troubleshooting
 
