@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from datetime import date, datetime
 from typing import Optional, Union
 
-# Pydantic model for creating leave requests
+# Pydantic models for leave requests
 class CreateLeaveRequest(BaseModel):
     """Unified model for both timeoff and permission requests"""
     request_type: RequestTypeEnum
@@ -15,6 +15,11 @@ class CreateLeaveRequest(BaseModel):
     start_datetime: Optional[datetime] = None
     end_datetime: Optional[datetime] = None
     reason: Optional[str] = None
+
+class UpdateLeaveRequestStatus(BaseModel):
+    """Model for updating leave request status (manager only)"""
+    status: StatusEnum
+    review_comment: Optional[str] = None
 
 router = APIRouter()
 
@@ -164,3 +169,70 @@ def create_leave_request(request: Request, leave_data: CreateLeaveRequest):
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Failed to create leave request: {str(e)}")
+
+@router.put("/leave_requests/{request_id}/status")
+def update_leave_request_status(request_id: int, request: Request, status_data: UpdateLeaveRequestStatus):
+    """Update leave request status (manager only)"""
+    try:
+        # Access authenticated user from middleware
+        user = request.state.user
+        if not user:
+            raise HTTPException(status_code=401, detail="Authentication required")
+        
+        # Check if user is a manager
+        if user["role"] != "manager":
+            raise HTTPException(status_code=403, detail="Only managers can update leave request status")
+        
+        db = next(get_db())
+        
+        # Find the leave request
+        leave_request = db.query(LeaveRequest).filter(LeaveRequest.id == request_id).first()
+        if not leave_request:
+            raise HTTPException(status_code=404, detail="Leave request not found")
+        
+        # Check if request is already processed
+        if leave_request.status != StatusEnum.pending:
+            raise HTTPException(status_code=400, detail=f"Leave request is already {leave_request.status}")
+        
+        # Update the status
+        leave_request.status = status_data.status
+        leave_request.reviewed_by = user["id"]
+        leave_request.reviewed_at = datetime.now()
+        leave_request.updated_at = datetime.now()
+        
+        db.commit()
+        db.refresh(leave_request)
+        
+        # Return the updated leave request
+        response_data = {
+            "id": leave_request.id,
+            "user_id": leave_request.user_id,
+            "request_type": leave_request.request_type,
+            "reason": leave_request.reason,
+            "status": leave_request.status,
+            "reviewed_by": leave_request.reviewed_by,
+            "reviewed_at": leave_request.reviewed_at.isoformat() if leave_request.reviewed_at else None,
+            "created_at": leave_request.created_at.isoformat(),
+            "updated_at": leave_request.updated_at.isoformat(),
+            "message": f"Leave request {status_data.status} successfully"
+        }
+        
+        # Add type-specific fields to response
+        if leave_request.request_type == RequestTypeEnum.timeoff:
+            response_data.update({
+                "start_date": leave_request.start_date.isoformat(),
+                "end_date": leave_request.end_date.isoformat()
+            })
+        else:  # permission
+            response_data.update({
+                "start_datetime": leave_request.start_datetime.isoformat(),
+                "end_datetime": leave_request.end_datetime.isoformat()
+            })
+        
+        return response_data
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to update leave request status: {str(e)}")
