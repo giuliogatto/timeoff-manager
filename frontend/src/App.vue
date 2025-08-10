@@ -14,6 +14,7 @@
       </template>
     </nav>
     <router-view />
+    <Toast />
   </div>
 </template>
 
@@ -23,6 +24,7 @@ import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from './stores/auth'
 import NotificationCenter from './components/NotificationCenter.vue'
+import Toast from './components/Toast.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()

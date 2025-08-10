@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import axios from 'axios'
+import api from '../utils/axios'
 
 export const useLeaveRequestsStore = defineStore('leaveRequests', () => {
   // State
@@ -22,16 +22,13 @@ export const useLeaveRequestsStore = defineStore('leaveRequests', () => {
     leaveRequests.value.filter(request => request.status === 'rejected')
   )
 
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000/'
-
   // Actions
   const fetchLeaveRequests = async () => {
     loading.value = true
     error.value = null
     try {
-      console.log('Fetching leave requests from:', `${backendUrl}leave_requests`)
-      console.log('Authorization header:', axios.defaults.headers.common['Authorization'])
-      const response = await axios.get(`${backendUrl}leave_requests`)
+      console.log('Fetching leave requests...')
+      const response = await api.get(`leave_requests`)
       console.log('Leave requests response:', response.data)
       leaveRequests.value = response.data.leave_requests || response.data
       return response.data.leave_requests || response.data
@@ -48,7 +45,7 @@ export const useLeaveRequestsStore = defineStore('leaveRequests', () => {
     loading.value = true
     error.value = null
     try {
-      const response = await axios.post(`${backendUrl}leave_requests`, requestData)
+      const response = await api.post(`leave_requests`, requestData)
       // Refresh the list after creating
       await fetchLeaveRequests()
       return response.data
@@ -64,7 +61,7 @@ export const useLeaveRequestsStore = defineStore('leaveRequests', () => {
     loading.value = true
     error.value = null
     try {
-      const response = await axios.put(`${backendUrl}leave_requests/${requestId}/status`, {
+      const response = await api.put(`leave_requests/${requestId}/status`, {
         status,
         review_comment: reviewComment
       })
@@ -110,7 +107,6 @@ export const useLeaveRequestsStore = defineStore('leaveRequests', () => {
     pendingRequests,
     approvedRequests,
     rejectedRequests,
-    backendUrl,
     
     // Actions
     fetchLeaveRequests,

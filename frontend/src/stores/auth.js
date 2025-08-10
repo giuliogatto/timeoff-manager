@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import axios from 'axios'
+import api from '../utils/axios'
 
 export const useAuthStore = defineStore('auth', () => {
   // State
@@ -17,7 +17,7 @@ export const useAuthStore = defineStore('auth', () => {
   const login = async (email, password) => {
     loading.value = true
     try {
-      const response = await axios.post(`${backendUrl}login`, {
+      const response = await api.post(`login`, {
         email,
         password
       })
@@ -27,9 +27,6 @@ export const useAuthStore = defineStore('auth', () => {
       
       localStorage.setItem('token', response.data.token)
       localStorage.setItem('user', JSON.stringify(response.data))
-      
-      // Set default authorization header for future requests
-      axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`
       
       return response.data
     } catch (error) {
@@ -44,13 +41,12 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = null
     localStorage.removeItem('token')
     localStorage.removeItem('user')
-    delete axios.defaults.headers.common['Authorization']
   }
 
   const register = async (name, email, password) => {
     loading.value = true
     try {
-      const response = await axios.post(`${backendUrl}register`, {
+      const response = await api.post(`register`, {
         name,
         email,
         password
@@ -65,7 +61,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   const googleLogin = async () => {
     try {
-      const response = await axios.get(`${backendUrl}google/auth-url`)
+      const response = await api.get(`google/auth-url`)
       window.location.href = response.data.auth_url
     } catch (error) {
       throw error
@@ -75,13 +71,7 @@ export const useAuthStore = defineStore('auth', () => {
   const initializeAuth = () => {
     console.log('Initializing auth...')
     console.log('Token from localStorage:', token.value)
-    // Set authorization header if token exists
-    if (token.value) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token.value}`
-      console.log('Authorization header set:', axios.defaults.headers.common['Authorization'])
-    } else {
-      console.log('No token found, not setting Authorization header')
-    }
+    // No need to set headers manually - axios interceptor handles it
   }
 
   return {

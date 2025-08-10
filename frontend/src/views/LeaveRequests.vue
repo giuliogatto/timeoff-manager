@@ -230,7 +230,8 @@ onMounted(async () => {
   console.log('Auth store state:', {
     isAuthenticated: authStore.isAuthenticated,
     token: authStore.token,
-    user: authStore.user
+    user: authStore.user,
+    isManager: authStore.isManager
   })
   
   if (authStore.isAuthenticated) {
