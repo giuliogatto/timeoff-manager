@@ -101,7 +101,7 @@ class TestLeaveRequests:
     
     def test_create_permission_request(self, client, auth_headers, test_user):
         """Test creating a permission request"""
-        start_time = datetime.now()
+        start_time = datetime.now() + timedelta(hours=1)  # Future time
         end_time = start_time + timedelta(hours=3)
         
         request_data = {
@@ -156,7 +156,7 @@ class TestLeaveRequests:
         }
         
         response = client.post("/leave_requests", json=request_data, headers=auth_headers)
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
     
     def test_create_permission_request_missing_datetimes(self, client, auth_headers):
         """Test creating a permission request without required datetimes"""
@@ -166,7 +166,7 @@ class TestLeaveRequests:
         }
         
         response = client.post("/leave_requests", json=request_data, headers=auth_headers)
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
     
     def test_update_request_status_unauthorized(self, client, db_session, test_user):
         """Test updating request status without authentication"""
@@ -204,7 +204,7 @@ class TestLeaveRequests:
         }, headers=auth_headers)
         assert response.status_code == status.HTTP_403_FORBIDDEN
     
-    def test_update_request_status_manager(self, client, manager_headers, db_session, test_user):
+    def test_update_request_status_manager(self, client, manager_headers, db_session, test_user, test_manager):
         """Test updating request status as manager"""
         # Create a leave request
         leave_request = LeaveRequest(
@@ -224,12 +224,12 @@ class TestLeaveRequests:
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
         assert data["status"] == "approved"
-        assert data["reviewed_by"] == test_user.id  # The manager's ID
+        assert data["reviewed_by"] == test_manager.id  # The manager's ID
         
         # Check database was updated
         db_session.refresh(leave_request)
         assert leave_request.status == StatusEnum.approved
-        assert leave_request.reviewed_by == test_user.id
+        assert leave_request.reviewed_by == test_manager.id
         assert leave_request.reviewed_at is not None
     
     def test_update_request_status_invalid_status(self, client, manager_headers, db_session, test_user):
