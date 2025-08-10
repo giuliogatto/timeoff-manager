@@ -17,6 +17,9 @@ PUBLIC_ROUTES = {
     "/login",
     "/register", 
     "/register_confirm",
+    "/google/login",
+    "/google/callback",
+    "/google/auth-url",
     "/docs",
     "/redoc",
     "/openapi.json"
