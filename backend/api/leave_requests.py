@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request, Depends
 from sqlalchemy.orm import Session
 from models.leave_requests import LeaveRequest, StatusEnum, RequestTypeEnum, User
 from database import get_db
@@ -100,15 +100,13 @@ async def send_new_request_notification(request_id: int, user_name: str, user_id
         print(f"Error sending new request notification: {e}")
 
 @router.get("/leave_requests")
-def get_leave_requests(request: Request):
+def get_leave_requests(request: Request, db: Session = Depends(get_db)):
     """Get leave requests based on user role: managers see all, users see only their own"""
     try:
         # Access authenticated user from middleware
         user = request.state.user
         if not user:
             raise HTTPException(status_code=401, detail="Authentication required")
-        
-        db = next(get_db())
         
         # Filter based on user role
         if user["role"] == "manager":
@@ -157,7 +155,7 @@ def get_leave_requests(request: Request):
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 @router.post("/leave_requests")
-async def create_leave_request(request: Request, leave_data: CreateLeaveRequest):
+async def create_leave_request(request: Request, leave_data: CreateLeaveRequest, db: Session = Depends(get_db)):
     """Create a new leave request (timeoff or permission) for the authenticated user"""
     try:
         # Access authenticated user from middleware
@@ -187,8 +185,6 @@ async def create_leave_request(request: Request, leave_data: CreateLeaveRequest)
             
             if leave_data.start_datetime < datetime.now():
                 raise HTTPException(status_code=400, detail="Start datetime cannot be in the past")
-        
-        db = next(get_db())
         
         # Create new leave request based on type
         if leave_data.request_type == RequestTypeEnum.timeoff:
@@ -258,7 +254,7 @@ async def create_leave_request(request: Request, leave_data: CreateLeaveRequest)
         raise HTTPException(status_code=500, detail=f"Failed to create leave request: {str(e)}")
 
 @router.put("/leave_requests/{request_id}/status")
-async def update_leave_request_status(request_id: int, request: Request, status_data: UpdateLeaveRequestStatus):
+async def update_leave_request_status(request_id: int, request: Request, status_data: UpdateLeaveRequestStatus, db: Session = Depends(get_db)):
     """Update leave request status (manager only)"""
     try:
         # Access authenticated user from middleware
@@ -269,8 +265,6 @@ async def update_leave_request_status(request_id: int, request: Request, status_
         # Check if user is a manager
         if user["role"] != "manager":
             raise HTTPException(status_code=403, detail="Only managers can update leave request status")
-        
-        db = next(get_db())
         
         # Find the leave request
         leave_request = db.query(LeaveRequest).filter(LeaveRequest.id == request_id).first()
