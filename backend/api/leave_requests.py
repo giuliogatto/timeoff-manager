@@ -36,20 +36,22 @@ def get_leave_requests(request: Request):
         
         # Filter based on user role
         if user["role"] == "manager":
-            # Managers can see all leave requests
-            leave_requests = db.query(LeaveRequest).all()
+            # Managers can see all leave requests with user information
+            leave_requests = db.query(LeaveRequest, User).join(User, LeaveRequest.user_id == User.id).all()
             message = "All leave requests retrieved (manager view)"
         else:
-            # Regular users can only see their own leave requests
-            leave_requests = db.query(LeaveRequest).filter(LeaveRequest.user_id == user["id"]).all()
+            # Regular users can only see their own leave requests with user information
+            leave_requests = db.query(LeaveRequest, User).join(User, LeaveRequest.user_id == User.id).filter(LeaveRequest.user_id == user["id"]).all()
             message = "Your leave requests retrieved (user view)"
         
         # Convert to dictionary format
         result = []
-        for request in leave_requests:
+        for request, user_info in leave_requests:
             result.append({
                 "id": request.id,
                 "user_id": request.user_id,
+                "user_name": user_info.name,
+                "user_email": user_info.email,
                 "request_type": request.request_type,
                 "start_date": request.start_date.isoformat() if request.start_date else None,
                 "end_date": request.end_date.isoformat() if request.end_date else None,
