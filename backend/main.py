@@ -1,8 +1,12 @@
 from fastapi import FastAPI
 from api.leave_requests import router as leave_requests_router
 from api.authentication import router as auth_router
+from middleware.auth import AuthMiddleware
 
 app = FastAPI(title="Timeoff Manager API")
+
+# Add authentication middleware
+app.add_middleware(AuthMiddleware)
 
 # Include routers
 app.include_router(leave_requests_router)
