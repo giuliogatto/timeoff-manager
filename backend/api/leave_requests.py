@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Request
 from sqlalchemy.orm import Session
-from models.leave_requests import LeaveRequest, StatusEnum, RequestTypeEnum
+from models.leave_requests import LeaveRequest, StatusEnum, RequestTypeEnum, User
 from database import get_db
 from pydantic import BaseModel
 from datetime import date, datetime
