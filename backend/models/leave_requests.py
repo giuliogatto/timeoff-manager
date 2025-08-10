@@ -11,6 +11,10 @@ class StatusEnum(str, enum.Enum):
     approved = "approved"
     rejected = "rejected"
 
+class RequestTypeEnum(str, enum.Enum):
+    timeoff = "timeoff"      # Day-based leave
+    permission = "permission" # Hour-based leave
+
 class AuthProviderEnum(str, enum.Enum):
     local = "local"
     google = "google"
@@ -46,8 +50,15 @@ class LeaveRequest(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    start_date = Column(Date, nullable=False)
-    end_date = Column(Date, nullable=False)
+    request_type = Column(Enum(RequestTypeEnum), nullable=False)
+    
+    # For timeoff (day-based): start_date and end_date
+    # For permission (hour-based): start_datetime and end_datetime
+    start_date = Column(Date, nullable=True)  # For timeoff
+    end_date = Column(Date, nullable=True)    # For timeoff
+    start_datetime = Column(DateTime, nullable=True)  # For permission
+    end_datetime = Column(DateTime, nullable=True)    # For permission
+    
     reason = Column(Text)
     status = Column(Enum(StatusEnum), default=StatusEnum.pending)
     reviewed_by = Column(Integer, ForeignKey("users.id"))

@@ -24,8 +24,11 @@ CREATE TABLE users (
 CREATE TABLE leave_requests (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
-    start_date DATE NOT NULL,
-    end_date DATE NOT NULL,
+    request_type ENUM('timeoff', 'permission') NOT NULL,
+    start_date DATE NULL, -- For timeoff (day-based)
+    end_date DATE NULL,   -- For timeoff (day-based)
+    start_datetime DATETIME NULL, -- For permission (hour-based)
+    end_datetime DATETIME NULL,   -- For permission (hour-based)
     reason TEXT,
     status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
     reviewed_by INT, -- Manager who approved/rejected
