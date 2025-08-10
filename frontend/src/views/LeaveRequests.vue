@@ -2,7 +2,7 @@
   <div class="leave-requests">
     <div class="header">
       <h2>Leave Requests</h2>
-      <button @click="showCreateForm = true" class="create-btn">
+      <button @click="showCreateForm = true" v-if="!authStore.isManager" class="create-btn">
         Create New Request
       </button>
     </div>
