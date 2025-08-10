@@ -42,9 +42,9 @@
           placeholder="Confirm your password"
         />
       </div>
-      <button type="submit" :disabled="loading || !passwordsMatch">
-        {{ loading ? 'Registering...' : 'Register' }}
-      </button>
+              <button type="submit" :disabled="authStore.loading || !passwordsMatch">
+          {{ authStore.loading ? 'Registering...' : 'Register' }}
+        </button>
     </form>
     
     <p v-if="!passwordsMatch && confirmPassword" class="error">
@@ -60,16 +60,14 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
+import { useAuthStore } from '../stores/auth'
 
 const router = useRouter()
+const authStore = useAuthStore()
 const name = ref('')
 const email = ref('')
 const password = ref('')
 const confirmPassword = ref('')
-const loading = ref(false)
-
-const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000/'
 
 const passwordsMatch = computed(() => {
   return password.value === confirmPassword.value
@@ -81,14 +79,8 @@ const handleRegister = async () => {
     return
   }
   
-  loading.value = true
   try {
-    const response = await axios.post(`${backendUrl}register`, {
-      name: name.value,
-      email: email.value,
-      password: password.value
-    })
-    
+    await authStore.register(name.value, email.value, password.value)
     alert('Registration successful! Please check your email to confirm your account.')
     router.push('/login')
   } catch (error) {
@@ -98,8 +90,6 @@ const handleRegister = async () => {
     } else {
       alert('Registration failed. Please try again.')
     }
-  } finally {
-    loading.value = false
   }
 }
 </script>

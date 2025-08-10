@@ -16,6 +16,12 @@ const routes = [
     path: '/register',
     name: 'Register',
     component: () => import('../views/Register.vue')
+  },
+  {
+    path: '/leave_requests',
+    name: 'LeaveRequests',
+    component: () => import('../views/LeaveRequests.vue'),
+    meta: { requiresAuth: true }
   }
 ]
 

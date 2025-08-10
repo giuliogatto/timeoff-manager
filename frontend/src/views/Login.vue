@@ -22,9 +22,9 @@
           placeholder="Enter your password"
         />
       </div>
-      <button type="submit" :disabled="loading">
-        {{ loading ? 'Logging in...' : 'Login' }}
-      </button>
+              <button type="submit" :disabled="authStore.loading">
+          {{ authStore.loading ? 'Logging in...' : 'Login' }}
+        </button>
     </form>
     
     <div class="oauth-section">
@@ -43,41 +43,26 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
+import { useAuthStore } from '../stores/auth'
 
 const router = useRouter()
+const authStore = useAuthStore()
 const email = ref('')
 const password = ref('')
-const loading = ref(false)
-
-const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000/'
 
 const handleLogin = async () => {
-  loading.value = true
   try {
-    const response = await axios.post(`${backendUrl}login`, {
-      email: email.value,
-      password: password.value
-    })
-    
-    // Store token
-    localStorage.setItem('token', response.data.token)
-    localStorage.setItem('user', JSON.stringify(response.data))
-    
-    // Redirect to home
+    await authStore.login(email.value, password.value)
     router.push('/')
   } catch (error) {
     console.error('Login error:', error)
     alert('Login failed. Please check your credentials.')
-  } finally {
-    loading.value = false
   }
 }
 
 const googleLogin = async () => {
   try {
-    const response = await axios.get(`${backendUrl}google/auth-url`)
-    window.location.href = response.data.auth_url
+    await authStore.googleLogin()
   } catch (error) {
     console.error('Google OAuth error:', error)
     alert('Google OAuth not available.')

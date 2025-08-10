@@ -1,9 +1,16 @@
 <template>
   <div id="app">
     <nav>
-      <router-link to="/">Home</router-link> |
-      <router-link to="/login">Login</router-link> |
-      <router-link to="/register">Register</router-link>
+      <router-link to="/">Home</router-link>
+      <template v-if="authStore.isAuthenticated">
+        | <router-link to="/leave_requests">Leave Requests</router-link>
+        | <span class="user-info">Welcome, {{ authStore.user?.name }}</span>
+        | <button @click="logout" class="logout-btn">Logout</button>
+      </template>
+      <template v-else>
+        | <router-link to="/login">Login</router-link>
+        | <router-link to="/register">Register</router-link>
+      </template>
     </nav>
     <router-view />
   </div>
@@ -12,10 +19,21 @@
 <script setup>
 // Vue 3 Composition API with script setup
 import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from './stores/auth'
+
+const router = useRouter()
+const authStore = useAuthStore()
 
 onMounted(() => {
   console.log('Timeoff Manager Frontend loaded!')
+  authStore.initializeAuth()
 })
+
+const logout = () => {
+  authStore.logout()
+  router.push('/login')
+}
 </script>
 
 <style>
@@ -41,5 +59,23 @@ nav a {
 
 nav a.router-link-exact-active {
   color: #42b983;
+}
+
+.user-info {
+  color: #2c3e50;
+  font-weight: bold;
+}
+
+.logout-btn {
+  background: none;
+  border: none;
+  color: #e74c3c;
+  cursor: pointer;
+  font-size: 14px;
+  text-decoration: underline;
+}
+
+.logout-btn:hover {
+  color: #c0392b;
 }
 </style>
