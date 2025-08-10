@@ -1,0 +1,33 @@
+services:
+  # Data services (MySQL + phpMyAdmin)
+  timeoff-manager-data:
+    extends:
+      file: ./data/docker-compose.yml
+      service: timeoff-manager-data
+
+  phpmyadmin:
+    extends:
+      file: ./data/docker-compose.yml
+      service: phpmyadmin
+
+  # Backend service (FastAPI)
+  timeoff-manager-api:
+    extends:
+      file: ./backend/docker-compose.yml
+      service: timeoff-manager-api
+
+  # Frontend service (Vue.js)
+  timeoff-manager-frontend:
+    extends:
+      file: ./frontend/docker-compose.yml
+      service: timeoff-manager-frontend
+
+# Networks
+networks:
+  timeoff_manager_network:
+    external: true
+
+# Volumes
+volumes:
+  timeoff_manager_data:
+    external: true
