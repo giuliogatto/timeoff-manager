@@ -31,6 +31,7 @@ class AuthResponse(BaseModel):
     user_id: int
     email: str
     name: str
+    role: str
 
 # JWT Configuration
 SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-secret-key-change-in-production")
@@ -132,7 +133,8 @@ def login(login_data: LoginRequest, db: Session = Depends(get_db)):
             token=access_token,
             user_id=user.id,
             email=user.email,
-            name=user.name
+            name=user.name,
+            role=user.role
         )
         
     except HTTPException:
