@@ -32,8 +32,8 @@ export const useLeaveRequestsStore = defineStore('leaveRequests', () => {
       console.log('Authorization header:', axios.defaults.headers.common['Authorization'])
       const response = await axios.get(`${backendUrl}leave_requests`)
       console.log('Leave requests response:', response.data)
-      leaveRequests.value = response.data
-      return response.data
+      leaveRequests.value = response.data.leave_requests || response.data
+      return response.data.leave_requests || response.data
     } catch (err) {
       console.error('Error fetching leave requests:', err)
       error.value = err.response?.data?.detail || 'Failed to fetch leave requests'
