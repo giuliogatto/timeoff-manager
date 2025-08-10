@@ -1,9 +1,9 @@
 <template>
   <div class="leave-requests">
     <div class="header">
-      <h2>Leave Requests</h2>
+      <h2>{{ $t('leaveRequests.title') }}</h2>
       <button @click="showCreateForm = true" v-if="!authStore.isManager" class="create-btn">
-        Create New Request
+        {{ $t('leaveRequests.createNewRequest') }}
       </button>
     </div>
 
@@ -15,14 +15,14 @@
 
     <!-- Loading State -->
     <div v-if="leaveRequestsStore.loading" class="loading">
-      Loading leave requests...
+      {{ $t('leaveRequests.loading') }}
     </div>
 
     <!-- Leave Requests List -->
     <div v-else-if="leaveRequestsStore.leaveRequests.length > 0" class="requests-container">
       <!-- Pending Requests -->
       <div v-if="leaveRequestsStore.pendingRequests.length > 0" class="request-section">
-        <h3>Pending Requests</h3>
+        <h3>{{ $t('leaveRequests.pendingRequests') }}</h3>
         <div class="requests-grid">
           <div 
             v-for="request in leaveRequestsStore.pendingRequests" 
@@ -35,25 +35,25 @@
           >
             <div class="request-header">
               <span class="request-type">{{ request.request_type }}</span>
-              <span class="status pending">Pending</span>
+              <span class="status pending">{{ $t('common.pending') }}</span>
             </div>
             <div class="request-details">
-              <p><strong>User:</strong> {{ request.user_name || 'Unknown' }}</p>
+              <p><strong>{{ $t('common.user') }}:</strong> {{ request.user_name || $t('common.unknown') }}</p>
               <p v-if="request.request_type === 'timeoff'">
-                <strong>Dates:</strong> {{ formatDate(request.start_date) }} - {{ formatDate(request.end_date) }}
+                <strong>{{ $t('leaveRequests.dates') }}:</strong> {{ formatDate(request.start_date) }} - {{ formatDate(request.end_date) }}
               </p>
               <p v-else>
-                <strong>Time:</strong> {{ formatDateTime(request.start_datetime) }} - {{ formatDateTime(request.end_datetime) }}
+                <strong>{{ $t('common.time') }}:</strong> {{ formatDateTime(request.start_datetime) }} - {{ formatDateTime(request.end_datetime) }}
               </p>
-              <p v-if="request.reason"><strong>Reason:</strong> {{ request.reason }}</p>
-              <p><strong>Created:</strong> {{ formatDateTime(request.created_at) }}</p>
+              <p v-if="request.reason"><strong>{{ $t('common.reason') }}:</strong> {{ request.reason }}</p>
+              <p><strong>{{ $t('common.created') }}:</strong> {{ formatDateTime(request.created_at) }}</p>
             </div>
             <div v-if="authStore.isManager" class="request-actions">
               <button @click="approveRequest(request.id)" class="approve-btn">
-                Approve
+                {{ $t('common.approve') }}
               </button>
               <button @click="rejectRequest(request.id)" class="reject-btn">
-                Reject
+                {{ $t('common.reject') }}
               </button>
             </div>
           </div>
@@ -62,7 +62,7 @@
 
       <!-- Approved Requests -->
       <div v-if="leaveRequestsStore.approvedRequests.length > 0" class="request-section">
-        <h3>Approved Requests</h3>
+        <h3>{{ $t('leaveRequests.approvedRequests') }}</h3>
         <div class="requests-grid">
           <div 
             v-for="request in leaveRequestsStore.approvedRequests" 
@@ -75,18 +75,18 @@
           >
             <div class="request-header">
               <span class="request-type">{{ request.request_type }}</span>
-              <span class="status approved">Approved</span>
+              <span class="status approved">{{ $t('common.approved') }}</span>
             </div>
             <div class="request-details">
-              <p><strong>User:</strong> {{ request.user_name || 'Unknown' }}</p>
+              <p><strong>{{ $t('common.user') }}:</strong> {{ request.user_name || $t('common.unknown') }}</p>
               <p v-if="request.request_type === 'timeoff'">
-                <strong>Dates:</strong> {{ formatDate(request.start_date) }} - {{ formatDate(request.end_date) }}
+                <strong>{{ $t('leaveRequests.dates') }}:</strong> {{ formatDate(request.start_date) }} - {{ formatDate(request.end_date) }}
               </p>
               <p v-else>
-                <strong>Time:</strong> {{ formatDateTime(request.start_datetime) }} - {{ formatDateTime(request.end_datetime) }}
+                <strong>{{ $t('common.time') }}:</strong> {{ formatDateTime(request.start_datetime) }} - {{ formatDateTime(request.end_datetime) }}
               </p>
-              <p v-if="request.reason"><strong>Reason:</strong> {{ request.reason }}</p>
-              <p><strong>Approved:</strong> {{ formatDateTime(request.reviewed_at) }}</p>
+              <p v-if="request.reason"><strong>{{ $t('common.reason') }}:</strong> {{ request.reason }}</p>
+              <p><strong>{{ $t('common.approved') }}:</strong> {{ formatDateTime(request.reviewed_at) }}</p>
             </div>
           </div>
         </div>
@@ -94,7 +94,7 @@
 
       <!-- Rejected Requests -->
       <div v-if="leaveRequestsStore.rejectedRequests.length > 0" class="request-section">
-        <h3>Rejected Requests</h3>
+        <h3>{{ $t('leaveRequests.rejectedRequests') }}</h3>
         <div class="requests-grid">
           <div 
             v-for="request in leaveRequestsStore.rejectedRequests" 
@@ -107,18 +107,18 @@
           >
             <div class="request-header">
               <span class="request-type">{{ request.request_type }}</span>
-              <span class="status rejected">Rejected</span>
+              <span class="status rejected">{{ $t('common.rejected') }}</span>
             </div>
             <div class="request-details">
-              <p><strong>User:</strong> {{ request.user_name || 'Unknown' }}</p>
+              <p><strong>{{ $t('common.user') }}:</strong> {{ request.user_name || $t('common.unknown') }}</p>
               <p v-if="request.request_type === 'timeoff'">
-                <strong>Dates:</strong> {{ formatDate(request.start_date) }} - {{ formatDate(request.end_date) }}
+                <strong>{{ $t('leaveRequests.dates') }}:</strong> {{ formatDate(request.start_date) }} - {{ formatDate(request.end_date) }}
               </p>
               <p v-else>
-                <strong>Time:</strong> {{ formatDateTime(request.start_datetime) }} - {{ formatDateTime(request.end_datetime) }}
+                <strong>{{ $t('common.time') }}:</strong> {{ formatDateTime(request.start_datetime) }} - {{ formatDateTime(request.end_datetime) }}
               </p>
-              <p v-if="request.reason"><strong>Reason:</strong> {{ request.reason }}</p>
-              <p><strong>Rejected:</strong> {{ formatDateTime(request.reviewed_at) }}</p>
+              <p v-if="request.reason"><strong>{{ $t('common.reason') }}:</strong> {{ request.reason }}</p>
+              <p><strong>{{ $t('common.rejected') }}:</strong> {{ formatDateTime(request.reviewed_at) }}</p>
             </div>
           </div>
         </div>
@@ -127,24 +127,24 @@
 
     <!-- Empty State -->
     <div v-else class="empty-state">
-      <p>No leave requests found.</p>
+      <p>{{ $t('leaveRequests.noRequestsFound') }}</p>
     </div>
 
     <!-- Create Request Modal -->
     <div v-if="showCreateForm" class="modal-overlay" @click="showCreateForm = false">
       <div class="modal" @click.stop>
-        <h3>Create Leave Request</h3>
+        <h3>{{ $t('leaveRequests.createRequest') }}</h3>
         <form @submit.prevent="createRequest" class="create-form">
           <div class="form-group">
-            <label for="requestType">Request Type:</label>
+            <label for="requestType">{{ $t('leaveRequests.requestType') }}:</label>
             <select id="requestType" v-model="newRequest.request_type" required>
-              <option value="timeoff">Time Off (Days)</option>
-              <option value="permission">Permission (Hours)</option>
+              <option value="timeoff">{{ $t('leaveRequests.timeoff') }}</option>
+              <option value="permission">{{ $t('leaveRequests.permission') }}</option>
             </select>
           </div>
 
           <div v-if="newRequest.request_type === 'timeoff'" class="form-group">
-            <label for="startDate">Start Date:</label>
+            <label for="startDate">{{ $t('leaveRequests.startDate') }}:</label>
             <input 
               type="date" 
               id="startDate" 
@@ -154,7 +154,7 @@
           </div>
 
           <div v-if="newRequest.request_type === 'timeoff'" class="form-group">
-            <label for="endDate">End Date:</label>
+            <label for="endDate">{{ $t('leaveRequests.endDate') }}:</label>
             <input 
               type="date" 
               id="endDate" 
@@ -164,7 +164,7 @@
           </div>
 
           <div v-if="newRequest.request_type === 'permission'" class="form-group">
-            <label for="startDateTime">Start Date & Time:</label>
+            <label for="startDateTime">{{ $t('leaveRequests.startDateTime') }}:</label>
             <input 
               type="datetime-local" 
               id="startDateTime" 
@@ -174,7 +174,7 @@
           </div>
 
           <div v-if="newRequest.request_type === 'permission'" class="form-group">
-            <label for="endDateTime">End Date & Time:</label>
+            <label for="endDateTime">{{ $t('leaveRequests.endDateTime') }}:</label>
             <input 
               type="datetime-local" 
               id="endDateTime" 
@@ -184,21 +184,21 @@
           </div>
 
           <div class="form-group">
-            <label for="reason">Reason:</label>
+            <label for="reason">{{ $t('common.reason') }}:</label>
             <textarea 
               id="reason" 
               v-model="newRequest.reason" 
               rows="3"
-              placeholder="Please provide a reason for your request..."
+              :placeholder="$t('leaveRequests.reasonPlaceholder')"
             ></textarea>
           </div>
 
           <div class="form-actions">
             <button type="button" @click="showCreateForm = false" class="cancel-btn">
-              Cancel
+              {{ $t('common.cancel') }}
             </button>
             <button type="submit" :disabled="leaveRequestsStore.loading" class="submit-btn">
-              {{ leaveRequestsStore.loading ? 'Creating...' : 'Create Request' }}
+              {{ leaveRequestsStore.loading ? $t('leaveRequests.creating') : $t('leaveRequests.createRequest') }}
             </button>
           </div>
         </form>
@@ -209,8 +209,11 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '../stores/auth'
 import { useLeaveRequestsStore } from '../stores/leaveRequests'
+
+const { t } = useI18n()
 
 const authStore = useAuthStore()
 const leaveRequestsStore = useLeaveRequestsStore()

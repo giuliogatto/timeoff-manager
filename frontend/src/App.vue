@@ -1,16 +1,18 @@
 <template>
   <div id="app">
     <nav>
-      <router-link to="/">Home</router-link>
+      <router-link to="/">{{ $t('navigation.home') }}</router-link>
       <template v-if="authStore.isAuthenticated">
-        | <router-link to="/leave_requests">Leave Requests</router-link>
-        | <span class="user-info">Welcome, {{ authStore.user?.name }}</span>
+        | <router-link to="/leave_requests">{{ $t('navigation.leaveRequests') }}</router-link>
+        | <span class="user-info">{{ $t('common.welcome') }}, {{ authStore.user?.name }}</span>
         | <NotificationCenter />
-        | <button @click="logout" class="logout-btn">Logout</button>
+        | <LanguageSwitcher />
+        | <button @click="logout" class="logout-btn">{{ $t('common.logout') }}</button>
       </template>
       <template v-else>
-        | <router-link to="/login">Login</router-link>
-        | <router-link to="/register">Register</router-link>
+        | <router-link to="/login">{{ $t('common.login') }}</router-link>
+        | <router-link to="/register">{{ $t('common.register') }}</router-link>
+        | <LanguageSwitcher />
       </template>
     </nav>
     <router-view />
@@ -25,6 +27,7 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from './stores/auth'
 import NotificationCenter from './components/NotificationCenter.vue'
 import Toast from './components/Toast.vue'
+import LanguageSwitcher from './components/LanguageSwitcher.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
