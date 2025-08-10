@@ -27,7 +27,11 @@
           <div 
             v-for="request in leaveRequestsStore.pendingRequests" 
             :key="request.id" 
-            class="request-card pending"
+            :class="[
+              'request-card',
+              'pending',
+              { 'highlighted': leaveRequestsStore.isHighlighted(request.id) }
+            ]"
           >
             <div class="request-header">
               <span class="request-type">{{ request.request_type }}</span>
@@ -63,7 +67,11 @@
           <div 
             v-for="request in leaveRequestsStore.approvedRequests" 
             :key="request.id" 
-            class="request-card approved"
+            :class="[
+              'request-card',
+              'approved',
+              { 'highlighted': leaveRequestsStore.isHighlighted(request.id) }
+            ]"
           >
             <div class="request-header">
               <span class="request-type">{{ request.request_type }}</span>
@@ -91,7 +99,11 @@
           <div 
             v-for="request in leaveRequestsStore.rejectedRequests" 
             :key="request.id" 
-            class="request-card rejected"
+            :class="[
+              'request-card',
+              'rejected',
+              { 'highlighted': leaveRequestsStore.isHighlighted(request.id) }
+            ]"
           >
             <div class="request-header">
               <span class="request-type">{{ request.request_type }}</span>
@@ -378,6 +390,27 @@ const resetForm = () => {
 
 .request-card.rejected {
   border-left: 4px solid #e74c3c;
+}
+
+.request-card.highlighted {
+  animation: highlight-pulse 2s ease-in-out;
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+  border: 2px solid #3498db;
+}
+
+@keyframes highlight-pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+  }
 }
 
 .request-header {

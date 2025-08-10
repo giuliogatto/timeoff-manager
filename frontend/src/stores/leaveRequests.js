@@ -7,6 +7,7 @@ export const useLeaveRequestsStore = defineStore('leaveRequests', () => {
   const leaveRequests = ref([])
   const loading = ref(false)
   const error = ref(null)
+  const highlightedRequests = ref(new Set()) // Track highlighted requests
 
   // Getters
   const pendingRequests = computed(() => 
@@ -82,11 +83,28 @@ export const useLeaveRequestsStore = defineStore('leaveRequests', () => {
     error.value = null
   }
 
+  const highlightRequest = (requestId) => {
+    highlightedRequests.value.add(requestId)
+    // Remove highlight after 5 seconds
+    setTimeout(() => {
+      highlightedRequests.value.delete(requestId)
+    }, 5000)
+  }
+
+  const isHighlighted = (requestId) => {
+    return highlightedRequests.value.has(requestId)
+  }
+
+  const clearHighlights = () => {
+    highlightedRequests.value.clear()
+  }
+
   return {
     // State
     leaveRequests,
     loading,
     error,
+    highlightedRequests,
     
     // Getters
     pendingRequests,
@@ -98,6 +116,9 @@ export const useLeaveRequestsStore = defineStore('leaveRequests', () => {
     fetchLeaveRequests,
     createLeaveRequest,
     updateRequestStatus,
-    clearError
+    clearError,
+    highlightRequest,
+    isHighlighted,
+    clearHighlights
   }
 })

@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useAuthStore } from './auth'
+import { useLeaveRequestsStore } from './leaveRequests'
 
 export const useWebSocketStore = defineStore('websocket', () => {
   // State
@@ -123,10 +124,18 @@ export const useWebSocketStore = defineStore('websocket', () => {
         
       case 'notification':
         addNotification(message)
+        // Trigger leave requests refresh for status changes
+        if (message.notification_type === 'leave_request_status_changed') {
+          triggerLeaveRequestsRefresh()
+        }
         break
         
       case 'manager_notification':
         addNotification(message)
+        // Trigger leave requests refresh for new requests
+        if (message.notification_type === 'new_leave_request') {
+          triggerLeaveRequestsRefresh()
+        }
         break
         
       case 'pong':
@@ -144,6 +153,18 @@ export const useWebSocketStore = defineStore('websocket', () => {
       default:
         console.log('Unknown message type:', message.type)
     }
+  }
+
+  const triggerLeaveRequestsRefresh = () => {
+    console.log('🔄 Triggering leave requests refresh...')
+    const leaveRequestsStore = useLeaveRequestsStore()
+    leaveRequestsStore.fetchLeaveRequests().then(() => {
+      // Highlight the new request if it's a new request notification
+      const lastNotification = notifications.value[0]
+      if (lastNotification && lastNotification.data?.request_id) {
+        leaveRequestsStore.highlightRequest(lastNotification.data.request_id)
+      }
+    })
   }
 
   const addNotification = (message) => {

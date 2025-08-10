@@ -53,23 +53,12 @@ async def send_leave_request_notification(request_id: int, status: str, reviewer
             }
         }
         
-        # Send notification to the request owner
+        # Send notification only to the request owner
         await manager.send_notification_to_user(
             leave_request.user_id,
             "leave_request_status_changed",
             notification_data
         )
-        
-        # Send notification to managers about the status change
-        await manager.broadcast_to_managers({
-            "type": "manager_notification",
-            "notification_type": "leave_request_status_changed",
-            "data": {
-                **notification_data,
-                "user_name": user.name,
-                "user_email": user.email
-            }
-        })
         
     except Exception as e:
         print(f"Error sending notification: {e}")
@@ -251,7 +240,7 @@ async def create_leave_request(request: Request, leave_data: CreateLeaveRequest)
                 "end_datetime": new_leave_request.end_datetime.isoformat()
             })
         
-        # Send WebSocket notification for new request creation
+        # Send WebSocket notification to managers about new request creation
         await send_new_request_notification(
             request_id=new_leave_request.id,
             user_name=user["name"],
