@@ -1,19 +1,19 @@
 <template>
   <div class="home">
-    <h1>Welcome to Timeoff Manager</h1>
-    <p>Manage your time-off requests efficiently</p>
+    <h1>{{ $t('home.welcome') }}</h1>
+    <p>{{ $t('home.description') }}</p>
     <div class="features">
       <div class="feature">
-        <h3>Easy Request Management</h3>
-        <p>Submit and track your time-off requests</p>
+        <h3>{{ $t('home.features.easyRequestManagement') }}</h3>
+        <p>{{ $t('home.features.easyRequestManagementDesc') }}</p>
       </div>
       <div class="feature">
-        <h3>Manager Approval</h3>
-        <p>Streamlined approval process for managers</p>
+        <h3>{{ $t('home.features.managerApproval') }}</h3>
+        <p>{{ $t('home.features.managerApprovalDesc') }}</p>
       </div>
       <div class="feature">
-        <h3>Google OAuth</h3>
-        <p>Quick login with your Google account</p>
+        <h3>{{ $t('home.features.googleOAuth') }}</h3>
+        <p>{{ $t('home.features.googleOAuthDesc') }}</p>
       </div>
     </div>
   </div>
@@ -21,7 +21,9 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const backendUrl = ref(import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000/')
 
 onMounted(() => {

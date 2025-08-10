@@ -1,58 +1,58 @@
 <template>
   <div class="register">
-    <h2>Register</h2>
+    <h2>{{ $t('auth.register') }}</h2>
     <form @submit.prevent="handleRegister" class="register-form">
       <div class="form-group">
-        <label for="name">Full Name:</label>
+        <label for="name">{{ $t('auth.fullName') }}:</label>
         <input 
           type="text" 
           id="name" 
           v-model="name" 
           required 
-          placeholder="Enter your full name"
+          :placeholder="$t('auth.fullNamePlaceholder')"
         />
       </div>
       <div class="form-group">
-        <label for="email">Email:</label>
+        <label for="email">{{ $t('auth.email') }}:</label>
         <input 
           type="email" 
           id="email" 
           v-model="email" 
           required 
-          placeholder="Enter your email"
+          :placeholder="$t('auth.emailPlaceholder')"
         />
       </div>
       <div class="form-group">
-        <label for="password">Password:</label>
+        <label for="password">{{ $t('auth.password') }}:</label>
         <input 
           type="password" 
           id="password" 
           v-model="password" 
           required 
-          placeholder="Enter your password"
+          :placeholder="$t('auth.passwordPlaceholder')"
         />
       </div>
       <div class="form-group">
-        <label for="confirmPassword">Confirm Password:</label>
+        <label for="confirmPassword">{{ $t('auth.confirmPassword') }}:</label>
         <input 
           type="password" 
           id="confirmPassword" 
           v-model="confirmPassword" 
           required 
-          placeholder="Confirm your password"
+          :placeholder="$t('auth.confirmPasswordPlaceholder')"
         />
       </div>
-              <button type="submit" :disabled="authStore.loading || !passwordsMatch">
-          {{ authStore.loading ? 'Registering...' : 'Register' }}
-        </button>
+      <button type="submit" :disabled="authStore.loading || !passwordsMatch">
+        {{ authStore.loading ? $t('auth.registering') : $t('auth.register') }}
+      </button>
     </form>
     
     <p v-if="!passwordsMatch && confirmPassword" class="error">
-      Passwords do not match
+      {{ $t('auth.passwordsDoNotMatch') }}
     </p>
     
     <p class="login-link">
-      Already have an account? <router-link to="/login">Login here</router-link>
+      {{ $t('auth.alreadyHaveAccount') }} <router-link to="/login">{{ $t('auth.loginHere') }}</router-link>
     </p>
   </div>
 </template>
@@ -60,7 +60,10 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '../stores/auth'
+
+const { t } = useI18n()
 
 const router = useRouter()
 const authStore = useAuthStore()

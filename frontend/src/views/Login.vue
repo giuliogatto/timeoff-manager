@@ -1,41 +1,41 @@
 <template>
   <div class="login">
-    <h2>Login</h2>
+    <h2>{{ $t('auth.login') }}</h2>
     <form @submit.prevent="handleLogin" class="login-form">
       <div class="form-group">
-        <label for="email">Email:</label>
+        <label for="email">{{ $t('auth.email') }}:</label>
         <input 
           type="email" 
           id="email" 
           v-model="email" 
           required 
-          placeholder="Enter your email"
+          :placeholder="$t('auth.emailPlaceholder')"
         />
       </div>
       <div class="form-group">
-        <label for="password">Password:</label>
+        <label for="password">{{ $t('auth.password') }}:</label>
         <input 
           type="password" 
           id="password" 
           v-model="password" 
           required 
-          placeholder="Enter your password"
+          :placeholder="$t('auth.passwordPlaceholder')"
         />
       </div>
-              <button type="submit" :disabled="authStore.loading">
-          {{ authStore.loading ? 'Logging in...' : 'Login' }}
-        </button>
+      <button type="submit" :disabled="authStore.loading">
+        {{ authStore.loading ? $t('auth.loggingIn') : $t('auth.login') }}
+      </button>
     </form>
     
     <div class="oauth-section">
-      <p>Or login with:</p>
+      <p>{{ $t('auth.orLoginWith') }}</p>
       <button @click="googleLogin" class="google-btn">
-        Login with Google
+        {{ $t('auth.loginWithGoogle') }}
       </button>
     </div>
     
     <p class="register-link">
-      Don't have an account? <router-link to="/register">Register here</router-link>
+      {{ $t('auth.dontHaveAccount') }} <router-link to="/register">{{ $t('auth.registerHere') }}</router-link>
     </p>
   </div>
 </template>
@@ -43,7 +43,10 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '../stores/auth'
+
+const { t } = useI18n()
 
 const router = useRouter()
 const authStore = useAuthStore()

@@ -67,6 +67,16 @@
     "loginWithGoogle": "Login with Google",
     "registerWithGoogle": "Register with Google",
     "forgotPassword": "Forgot Password?",
+    "emailPlaceholder": "Enter your email",
+    "passwordPlaceholder": "Enter your password",
+    "loggingIn": "Logging in...",
+    "orLoginWith": "Or login with:",
+    "registerHere": "Register here",
+    "fullName": "Full Name",
+    "fullNamePlaceholder": "Enter your full name",
+    "confirmPasswordPlaceholder": "Confirm your password",
+    "registering": "Registering...",
+    "loginHere": "Login here",
     "rememberMe": "Remember Me",
     "dontHaveAccount": "Don't have an account?",
     "alreadyHaveAccount": "Already have an account?",
@@ -139,9 +149,12 @@
   },
   "notifications": {
     "title": "Notifications",
-    "noNotifications": "No notifications",
+    "noNotifications": "No notifications yet",
     "markAllAsRead": "Mark all as read",
     "clearAll": "Clear all",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "reconnect": "Reconnect",
     "newRequest": "New {type} request from {user}",
     "requestApproved": "Your {type} request was approved by {reviewer}",
     "requestRejected": "Your {type} request was rejected by {reviewer}",
@@ -162,7 +175,7 @@
   "home": {
     "title": "Timeoff Manager",
     "welcome": "Welcome to Timeoff Manager",
-    "description": "Manage your leave requests and permissions efficiently",
+    "description": "Manage your time-off requests efficiently",
     "getStarted": "Get Started",
     "learnMore": "Learn More",
     "features": {
@@ -171,7 +184,12 @@
       "permissionRequests": "Permission Requests",
       "realTimeNotifications": "Real-time Notifications",
       "managerApproval": "Manager Approval",
-      "easyTracking": "Easy Tracking"
+      "easyTracking": "Easy Tracking",
+      "easyRequestManagement": "Easy Request Management",
+      "easyRequestManagementDesc": "Submit and track your time-off requests",
+      "managerApprovalDesc": "Streamlined approval process for managers",
+      "googleOAuth": "Google OAuth",
+      "googleOAuthDesc": "Quick login with your Google account"
     }
   },
   "errors": {

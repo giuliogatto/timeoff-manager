@@ -19,13 +19,13 @@
     <!-- Notification Panel -->
     <div v-if="showNotifications" class="notification-panel">
       <div class="notification-header">
-        <h3>Notifications</h3>
+        <h3>{{ $t('notifications.title') }}</h3>
         <div class="notification-actions">
           <button @click="markAllAsRead" class="action-btn">
-            Mark all read
+            {{ $t('notifications.markAllAsRead') }}
           </button>
           <button @click="clearNotifications" class="action-btn">
-            Clear all
+            {{ $t('notifications.clearAll') }}
           </button>
         </div>
       </div>
@@ -33,16 +33,16 @@
       <!-- Connection Status -->
       <div class="connection-info">
         <span class="status-dot" :class="{ connected: websocketStore.isConnected }"></span>
-        {{ websocketStore.isConnected ? 'Connected' : 'Disconnected' }}
+        {{ websocketStore.isConnected ? $t('notifications.connected') : $t('notifications.disconnected') }}
         <button v-if="!websocketStore.isConnected" @click="reconnect" class="reconnect-btn">
-          Reconnect
+          {{ $t('notifications.reconnect') }}
         </button>
       </div>
 
       <!-- Notifications List -->
       <div class="notifications-list">
         <div v-if="websocketStore.notifications.length === 0" class="no-notifications">
-          <p>No notifications yet</p>
+          <p>{{ $t('notifications.noNotifications') }}</p>
         </div>
         
         <div 
@@ -69,8 +69,11 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useWebSocketStore } from '../stores/websocket'
 import { useAuthStore } from '../stores/auth'
+
+const { t } = useI18n()
 
 const websocketStore = useWebSocketStore()
 const authStore = useAuthStore()

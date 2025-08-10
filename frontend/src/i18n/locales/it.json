@@ -67,6 +67,16 @@
     "loginWithGoogle": "Accedi con Google",
     "registerWithGoogle": "Registrati con Google",
     "forgotPassword": "Password dimenticata?",
+    "emailPlaceholder": "Inserisci la tua email",
+    "passwordPlaceholder": "Inserisci la tua password",
+    "loggingIn": "Accesso in corso...",
+    "orLoginWith": "Oppure accedi con:",
+    "registerHere": "Registrati qui",
+    "fullName": "Nome Completo",
+    "fullNamePlaceholder": "Inserisci il tuo nome completo",
+    "confirmPasswordPlaceholder": "Conferma la tua password",
+    "registering": "Registrazione in corso...",
+    "loginHere": "Accedi qui",
     "rememberMe": "Ricordami",
     "dontHaveAccount": "Non hai un account?",
     "alreadyHaveAccount": "Hai già un account?",
@@ -139,9 +149,12 @@
   },
   "notifications": {
     "title": "Notifiche",
-    "noNotifications": "Nessuna notifica",
+    "noNotifications": "Nessuna notifica ancora",
     "markAllAsRead": "Segna tutte come lette",
     "clearAll": "Cancella tutte",
+    "connected": "Connesso",
+    "disconnected": "Disconnesso",
+    "reconnect": "Riconnetti",
     "newRequest": "Nuova richiesta {type} da {user}",
     "requestApproved": "La tua richiesta {type} è stata approvata da {reviewer}",
     "requestRejected": "La tua richiesta {type} è stata rifiutata da {reviewer}",
@@ -162,7 +175,7 @@
   "home": {
     "title": "Gestore Permessi",
     "welcome": "Benvenuto nel Gestore Permessi",
-    "description": "Gestisci le tue richieste di permesso e ferie in modo efficiente",
+    "description": "Gestisci le tue richieste di permesso in modo efficiente",
     "getStarted": "Inizia",
     "learnMore": "Scopri di Più",
     "features": {
@@ -171,7 +184,12 @@
       "permissionRequests": "Richieste di Permesso",
       "realTimeNotifications": "Notifiche in Tempo Reale",
       "managerApproval": "Approvazione Manager",
-      "easyTracking": "Tracciamento Semplice"
+      "easyTracking": "Tracciamento Semplice",
+      "easyRequestManagement": "Gestione Richieste Semplice",
+      "easyRequestManagementDesc": "Invia e traccia le tue richieste di permesso",
+      "managerApprovalDesc": "Processo di approvazione semplificato per i manager",
+      "googleOAuth": "Google OAuth",
+      "googleOAuthDesc": "Accesso rapido con il tuo account Google"
     }
   },
   "errors": {
