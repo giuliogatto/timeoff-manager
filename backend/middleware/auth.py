@@ -27,6 +27,11 @@ PUBLIC_ROUTES = {
 
 class AuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
+        # Allow OPTIONS requests (CORS preflight) without authentication
+        if request.method == "OPTIONS":
+            request.state.user = None
+            return await call_next(request)
+        
         # Check if the route is public
         if request.url.path in PUBLIC_ROUTES:
             request.state.user = None
