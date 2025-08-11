@@ -114,6 +114,83 @@ cd frontend && docker-compose up -d
 - Automatic account creation
 - No email confirmation required
 
+#### Setting Up Google OAuth
+
+To enable Google OAuth login, you need to create a Google OAuth application and obtain the necessary credentials:
+
+##### Step 1: Access Google Cloud Console
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/)
+2. Sign in with your Google account
+3. Create a new project or select an existing one
+
+##### Step 2: Enable Required APIs
+1. In the Google Cloud Console, go to **APIs & Services** > **Library**
+2. Search for "Google+ API" or "Google Identity"
+3. Enable the **Google+ API** (provides access to user profile information)
+
+##### Step 3: Configure OAuth Consent Screen
+1. Go to **APIs & Services** > **OAuth consent screen**
+2. Choose **External** user type (unless you have a Google Workspace)
+3. Fill in the required information:
+   - **App name**: "Timeoff Manager" (or your preferred name)
+   - **User support email**: Your email address
+   - **Developer contact information**: Your email address
+4. Add scopes: `openid`, `email`, `profile`
+5. Add test users if needed (for external apps)
+
+##### Step 4: Create OAuth 2.0 Credentials
+1. Go to **APIs & Services** > **Credentials**
+2. Click **Create Credentials** > **OAuth 2.0 Client IDs**
+3. **Application type**: Choose **Web application**
+4. **Name**: "Timeoff Manager Backend" (or any descriptive name)
+
+##### Step 5: Configure Authorized Origins and Redirects
+
+**Authorized JavaScript origins** (for frontend requests):
+- `http://localhost:3000` (for local development)
+- `https://yourdomain.com` (for production - replace with your actual domain)
+
+**Authorized redirect URIs** (for backend callbacks):
+- `http://localhost:8000/google/callback` (for local development)
+- `https://yourdomain.com/google/callback` (for production - replace with your actual domain)
+
+##### Step 6: Get Your Credentials
+After creating the OAuth client, you'll see:
+- **Client ID** (this is your `GOOGLE_CLIENT_ID`)
+- **Client Secret** (this is your `GOOGLE_CLIENT_SECRET`)
+
+##### Step 7: Configure Your Application
+Add the credentials to your `.env` file:
+```env
+GOOGLE_CLIENT_ID=your_google_client_id_here
+GOOGLE_CLIENT_SECRET=your_google_client_secret_here
+```
+
+##### Testing Your Setup
+1. Start your application: `./start.sh`
+2. Go to http://localhost:3000
+3. Click the "Login with Google" button
+4. You should be redirected to Google's OAuth consent screen
+5. After authorization, you should be redirected back to your application
+
+##### Troubleshooting
+- **"Google OAuth not configured" error**: Check that your environment variables are properly set
+- **Redirect URI mismatch**: Ensure the redirect URI in Google Console exactly matches your callback URL
+- **"Invalid client" error**: Verify your Client ID and Client Secret are correct
+- **CORS issues**: Make sure your frontend can communicate with your backend
+
+##### Production Considerations
+When deploying to production:
+1. Update the redirect URIs in Google Console to use your production domain
+2. Use HTTPS for all OAuth endpoints
+3. Consider using environment-specific OAuth clients (separate for dev/staging/prod)
+4. Monitor OAuth usage in Google Cloud Console
+
+**Security Notes**:
+- Never commit your `.env` file to version control
+- Keep your Client Secret secure - it should never be exposed in client-side code
+- Use HTTPS in production - Google OAuth requires secure connections for production use
+
 ## 📝 Environment Variables
 
 Create a `.env` file in the root directory:
