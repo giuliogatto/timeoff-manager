@@ -303,12 +303,12 @@ Once the backend is running, visit:
 
 ## Todo
 
-# Frontend
+### Frontend
 1. Add Tailwind
 2. Add a component library
 3. Use Typescript
 
-# CD & CI
+### CD & CI
 1. Implement a CD & CI pipeline with build, test and deploy steps
 
 ## 📄 License
