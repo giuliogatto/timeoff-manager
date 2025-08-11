@@ -17,7 +17,7 @@ Docker Compose version v2.35.1-desktop.1,
 On MAC OS Sonoma 14.7.1.
 
 ⚠️ **Warning:** 
-This software is NOT PRODUCTION READY, it is a prototype and it is meant to be used locally for develpment or inside a private network:
+This software is NOT PRODUCTION READY, it is a prototype and it is meant to be used locally for development or inside a private network:
 
 - it exposes unprotected access to phpmyadmin in port 8080
 
