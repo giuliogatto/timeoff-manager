@@ -6,7 +6,12 @@ A comprehensive time-off management system with FastAPI backend, Vue.js frontend
 
 ### Using the Main Docker Compose (Recommended)
 
-The main `docker-compose.yml` file orchestrates all services from the root directory:
+The main `docker-compose.yml` file orchestrates all services from the root directory.
+Tested with the following:
+Docker version 28.1.1, build 4eba377
+Docker Compose version v2.35.1-desktop.1
+On MAC OS Sonoma 14.7.1
+
 
 #### Option 1: Using Convenience Scripts (Recommended)
 ```bash
