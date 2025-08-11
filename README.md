@@ -28,10 +28,10 @@ On MAC OS Sonoma 14.7.1
 #### Option 2: Direct Docker Compose Commands
 ```bash
 # Start all services
-docker-compose up -d
+docker compose up -d
 
 # Stop all services
-docker-compose down
+docker compose down
 
 # View logs
 docker-compose logs -f
@@ -46,13 +46,13 @@ You can also manage services individually:
 
 ```bash
 # Data services (MySQL + phpMyAdmin)
-cd data && docker-compose up -d
+cd data && docker compose up -d
 
 # Backend service (FastAPI)
-cd backend && docker-compose up -d
+cd backend && docker compose up -d
 
 # Frontend service (Vue.js)
-cd frontend && docker-compose up -d
+cd frontend && docker compose up -d
 ```
 
 ## 📋 Services
@@ -253,7 +253,7 @@ docker-compose logs -f timeoff-manager-data
 
 ### Manual Testing
 
-1. **Start all services**: `docker-compose up -d`
+1. **Start all services**: `docker compose up -d`
 2. **Access frontend**: http://localhost:3000
 3. **Login as admin**: `admin@example.com` / `password`
 4. **Create test requests** and test the workflow
@@ -263,7 +263,7 @@ docker-compose logs -f timeoff-manager-data
 The backend includes comprehensive automated tests using pytest. All tests run inside the Docker container to ensure consistency.
 
 #### Prerequisites
-- Backend service must be running: `docker-compose up -d` (from root) or `cd backend && docker-compose up -d`
+- Backend service must be running: `docker compose up -d` (from root) or `cd backend && docker compose up -d`
 - Test dependencies are automatically installed in the container
 
 #### Running Tests
@@ -363,10 +363,10 @@ Current test coverage includes:
 ### Reset Everything
 ```bash
 # Stop and remove all containers, networks, and volumes
-docker-compose down -v
+docker compose down -v
 
 # Rebuild and start
-docker-compose up -d --build
+docker compose up -d --build
 ```
 
 ## 📚 API Documentation

@@ -22,7 +22,7 @@ fi
 
 # Start all services
 echo "🔧 Starting all services..."
-docker-compose up -d
+docker compose up -d
 
 # Wait a moment for services to start
 echo "⏳ Waiting for services to start..."
@@ -30,7 +30,7 @@ sleep 10
 
 # Check service status
 echo "📊 Service Status:"
-docker-compose ps
+docker compose ps
 
 echo ""
 echo "✅ Timeoff Manager is starting up!"
@@ -45,5 +45,5 @@ echo "🔐 Default Admin Login:"
 echo "   Email:    admin@example.com"
 echo "   Password: password"
 echo ""
-echo "📝 To view logs: docker-compose logs -f"
-echo "🛑 To stop:      docker-compose down"
+echo "📝 To view logs: docker compose logs -f"
+echo "🛑 To stop:      docker compose down"
