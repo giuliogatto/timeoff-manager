@@ -7,7 +7,7 @@
       ]"
     >
       <div class="request-header">
-        <span class="request-type">{{ request.request_type }}</span>
+        <span class="request-type">{{ request.request_type==='timeoff' ? $t('leaveRequests.timeoff') : $t('leaveRequests.permission') }}</span>
         <span :class="['status', request.status]">{{ getStatusText(request.status) }}</span>
       </div>
       <div class="request-details">
