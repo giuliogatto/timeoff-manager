@@ -174,7 +174,7 @@
   },
   "home": {
     "title": "Gestore Permessi",
-    "welcome": "Benvenuto nel Gestore Permessi",
+    "welcome": "Benvenuto nel Gestore Permessi e Ferie",
     "description": "Gestisci le tue richieste di permesso in modo efficiente",
     "getStarted": "Inizia",
     "learnMore": "Scopri di Più",
@@ -187,7 +187,7 @@
       "easyTracking": "Tracciamento Semplice",
       "easyRequestManagement": "Gestione Richieste Semplice",
       "easyRequestManagementDesc": "Invia e traccia le tue richieste di permesso",
-      "managerApprovalDesc": "Processo di approvazione semplificato per i manager",
+      "managerApprovalDesc": "Processo di approvazione semplificato per i manager con notifiche in tempo reale",
       "googleOAuth": "Google OAuth",
       "googleOAuthDesc": "Accesso rapido con il tuo account Google"
     }

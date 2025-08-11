@@ -187,7 +187,7 @@
       "easyTracking": "Easy Tracking",
       "easyRequestManagement": "Easy Request Management",
       "easyRequestManagementDesc": "Submit and track your time-off requests",
-      "managerApprovalDesc": "Streamlined approval process for managers",
+      "managerApprovalDesc": "Streamlined approval process for managers with real-time notifications",
       "googleOAuth": "Google OAuth",
       "googleOAuthDesc": "Quick login with your Google account"
     }
