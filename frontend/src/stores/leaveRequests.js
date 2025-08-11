@@ -82,10 +82,10 @@ export const useLeaveRequestsStore = defineStore('leaveRequests', () => {
 
   const highlightRequest = (requestId) => {
     highlightedRequests.value.add(requestId)
-    // Remove highlight after 5 seconds
+    // Remove highlight after 10 seconds
     setTimeout(() => {
       highlightedRequests.value.delete(requestId)
-    }, 5000)
+    }, 10000)
   }
 
   const isHighlighted = (requestId) => {
