@@ -301,6 +301,16 @@ Once the backend is running, visit:
 4. Test thoroughly
 5. Submit a pull request
 
+## Todo
+
+# Frontend
+1. Add Tailwind
+2. Add a component library
+3. Use Typescript
+
+# CD & CI
+1. Implement a CD & CI pipeline with build, test and deploy steps
+
 ## 📄 License
 
 This project is licensed under the MIT License.
