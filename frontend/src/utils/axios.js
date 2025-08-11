@@ -30,7 +30,7 @@ api.interceptors.response.use(
   (response) => {
     return response
   },
-  (error) => {
+  async (error) => {
     if (error.response?.status === 401) {
       console.log('🔐 401 Unauthorized - Token expired, logging out user')
       
@@ -38,19 +38,11 @@ api.interceptors.response.use(
       const authStore = useAuthStore()
       const toastStore = useToastStore()
       
-      // Clear auth data
-      authStore.logout()
-      
       // Show user-friendly toast message
       toastStore.warning('Your session has expired. Please login again.', 8000)
       
-      // Redirect to home page using window.location
-      // Use setTimeout to ensure the toast is shown before redirect
-      setTimeout(() => {
-        if (window.location.pathname !== '/') {
-          window.location.href = '/'
-        }
-      }, 100)
+      // Use the new forceLogout method which handles both logout and redirect
+      await authStore.forceLogout('Token expired')
     }
     
     return Promise.reject(error)

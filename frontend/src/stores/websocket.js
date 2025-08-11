@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useAuthStore } from './auth'
 import { useLeaveRequestsStore } from './leaveRequests'
+import { useToastStore } from './toast'
 
 export const useWebSocketStore = defineStore('websocket', () => {
   // State
@@ -17,10 +18,11 @@ export const useWebSocketStore = defineStore('websocket', () => {
   const unreadNotifications = computed(() => notifications.value.filter(n => !n.read).length)
 
   const authStore = useAuthStore()
+  const toastStore = useToastStore()
   const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000/'
 
   // Actions
-  const connect = () => {
+  const connect = async () => {
     console.log('Attempting to connect to WebSocket...')
     console.log('Auth token available:', !!authStore.token)
     console.log('Token:', authStore.token ? authStore.token.substring(0, 50) + '...' : 'None')
@@ -33,6 +35,18 @@ export const useWebSocketStore = defineStore('websocket', () => {
     if (!authStore.token) {
       console.log('No auth token available for WebSocket connection')
       return
+    }
+
+    // Validate token before attempting WebSocket connection
+    try {
+      const isValid = await authStore.validateToken()
+      if (!isValid) {
+        console.log('🔐 Token validation failed before WebSocket connection')
+        return // The validateToken method will handle logout
+      }
+    } catch (error) {
+      console.log('🔐 Token validation error before WebSocket connection:', error)
+      return // Let the auth store handle the error
     }
 
     try {
@@ -63,24 +77,46 @@ export const useWebSocketStore = defineStore('websocket', () => {
         }
       }
       
-      socket.value.onclose = (event) => {
+      socket.value.onclose = async (event) => {
         console.log('❌ WebSocket disconnected:', event.code, event.reason)
         isConnected.value = false
         stopPingInterval()
         
-        // Handle reconnection
+        // Check if the disconnect is due to authentication issues
+        if (event.code === 1006 || event.code === 1008 || event.code === 1011) {
+          console.log('🔐 WebSocket disconnected due to authentication issues')
+          
+          // If we have a token but connection failed, it might be expired
+          if (authStore.token) {
+            console.log('🔐 Token might be expired, triggering logout')
+            toastStore.warning('Your session has expired. Please login again.', 8000)
+            await authStore.forceLogout('WebSocket authentication failed')
+            return
+          }
+        }
+        
+        // Handle reconnection for other types of disconnections
         if (event.code !== 1000 && reconnectAttempts.value < maxReconnectAttempts) {
           setTimeout(() => {
             reconnectAttempts.value++
             console.log(`🔄 Reconnecting... Attempt ${reconnectAttempts.value}`)
             connect()
           }, 2000 * reconnectAttempts.value) // Exponential backoff
+        } else if (reconnectAttempts.value >= maxReconnectAttempts) {
+          console.log('❌ Max reconnection attempts reached')
+          connectionError.value = 'Failed to reconnect after multiple attempts'
         }
       }
       
       socket.value.onerror = (error) => {
         console.error('❌ WebSocket error:', error)
         connectionError.value = 'Connection failed'
+        
+        // If we have a token but connection failed, check if it's an auth issue
+        if (authStore.token) {
+          console.log('🔐 WebSocket connection error with token present - might be expired')
+          // We'll let the onclose handler deal with the specific error codes
+        }
       }
       
     } catch (error) {
@@ -114,7 +150,7 @@ export const useWebSocketStore = defineStore('websocket', () => {
     sendMessage({ type: 'get_connected_users' })
   }
 
-  const handleMessage = (message) => {
+  const handleMessage = async (message) => {
     console.log('📨 WebSocket message received:', message)
     
     switch (message.type) {
@@ -148,6 +184,13 @@ export const useWebSocketStore = defineStore('websocket', () => {
         
       case 'error':
         console.error('WebSocket error:', message.message)
+        // Check if the error is authentication-related
+        if (message.message && message.message.toLowerCase().includes('authentication') || 
+            message.message && message.message.toLowerCase().includes('token')) {
+          console.log('🔐 WebSocket authentication error received')
+          toastStore.warning('Your session has expired. Please login again.', 8000)
+          await authStore.forceLogout('WebSocket authentication error')
+        }
         break
         
       default:

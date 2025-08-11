@@ -36,11 +36,62 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  const logout = () => {
+  const logout = async (reason = 'User logged out') => {
+    console.log(`🔐 Logging out user: ${reason}`)
+    
+    // Clear state
     token.value = null
     user.value = null
+    
+    // Clear localStorage
     localStorage.removeItem('token')
     localStorage.removeItem('user')
+    
+    // Disconnect WebSocket if available
+    try {
+      const { useWebSocketStore } = await import('./websocket')
+      const websocketStore = useWebSocketStore()
+      websocketStore.disconnect()
+    } catch (error) {
+      console.log('WebSocket store not available during logout')
+    }
+    
+    // Clear any pending requests
+    // Note: This would require additional setup with axios cancel tokens
+    console.log('🔐 User logged out successfully')
+  }
+
+  const forceLogout = async (reason = 'Session expired') => {
+    console.log(`🔐 Force logging out user: ${reason}`)
+    
+    // Clear auth data
+    await logout(reason)
+    
+    // Redirect to home page
+    if (window.location.pathname !== '/') {
+      window.location.href = '/'
+    }
+  }
+
+  const validateToken = async () => {
+    if (!token.value) {
+      return false
+    }
+
+    try {
+      // Make a request to validate the token
+      // You can use any endpoint that requires authentication
+      await api.get('profile')
+      return true
+    } catch (error) {
+      if (error.response?.status === 401) {
+        console.log('🔐 Token validation failed - token is invalid')
+        forceLogout('Token validation failed')
+        return false
+      }
+      // For other errors, we'll assume the token is still valid
+      return true
+    }
   }
 
   const register = async (name, email, password) => {
@@ -71,7 +122,17 @@ export const useAuthStore = defineStore('auth', () => {
   const initializeAuth = () => {
     console.log('Initializing auth...')
     console.log('Token from localStorage:', token.value)
-    // No need to set headers manually - axios interceptor handles it
+    
+    // Validate token on app initialization
+    if (token.value) {
+      validateToken()
+    }
+  }
+
+  // Debug method to test token expiration (remove in production)
+  const testTokenExpiration = async () => {
+    console.log('🧪 Testing token expiration...')
+    await forceLogout('Manual test')
   }
 
   return {
@@ -88,8 +149,11 @@ export const useAuthStore = defineStore('auth', () => {
     // Actions
     login,
     logout,
+    forceLogout,
+    validateToken,
     register,
     googleLogin,
-    initializeAuth
+    initializeAuth,
+    testTokenExpiration
   }
 })
