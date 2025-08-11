@@ -123,10 +123,9 @@ export const useAuthStore = defineStore('auth', () => {
     console.log('Initializing auth...')
     console.log('Token from localStorage:', token.value)
     
-    // Validate token on app initialization
-    if (token.value) {
-      validateToken()
-    }
+    // Don't automatically validate token on app initialization
+    // This can cause issues with OAuth flows where the token is just set
+    // Token validation will happen when making authenticated requests
   }
 
   // Debug method to test token expiration (removed in production)

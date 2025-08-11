@@ -19,6 +19,11 @@ const routes = [
     component: () => import('../views/Register.vue')
   },
   {
+    path: '/auth/callback',
+    name: 'AuthCallback',
+    component: () => import('../views/AuthCallback.vue')
+  },
+  {
     path: '/leave_requests',
     name: 'LeaveRequests',
     component: () => import('../views/LeaveRequests.vue'),
