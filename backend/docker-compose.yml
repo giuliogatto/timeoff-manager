@@ -8,6 +8,9 @@ services:
       - PYTHONPATH=/app
       - PYTHONUNBUFFERED=1
       - DATABASE_URL=mysql+pymysql://timeoff_manager:${MYSQL_PASS:-time_off_manager}@host.docker.internal:3306/timeoff_manager_db
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-your-secret-key-change-in-production}
     ports:
       - "8000:8000"
     volumes:
