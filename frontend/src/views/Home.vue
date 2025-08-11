@@ -4,7 +4,7 @@
     <p>{{ $t('home.description') }}</p>
     
     <!-- Debug section - remove in production -->
-    <div v-if="authStore.isAuthenticated" class="debug-section">
+    <!-- <div v-if="authStore.isAuthenticated" class="debug-section">
       <h3>🔧 Debug Tools</h3>
       <button @click="testTokenExpiration" class="debug-btn">
         Test Token Expiration
@@ -12,7 +12,7 @@
       <p class="debug-info">
         Logged in as: {{ authStore.user?.name }} ({{ authStore.user?.role }})
       </p>
-    </div>
+    </div> -->
     
     <div class="features">
       <div class="feature">
