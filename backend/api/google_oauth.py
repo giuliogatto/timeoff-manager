@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, Request, Depends
+from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from models.leave_requests import User, AuthProviderEnum
 from database import get_db
@@ -125,14 +126,11 @@ def google_callback(code: str, request: Request, db: Session = Depends(get_db)):
             expires_delta=access_token_expires
         )
         
-        # Return token (in production, you might want to redirect to frontend)
-        return {
-            "token": access_token,
-            "user_id": user.id,
-            "email": user.email,
-            "name": user.name,
-            "auth_provider": user.auth_provider
-        }
+        # Redirect to frontend with token
+        frontend_url = "http://localhost:3000"
+        redirect_url = f"{frontend_url}/auth/callback?token={access_token}&user_id={user.id}&email={user.email}&name={user.name}"
+        
+        return RedirectResponse(url=redirect_url)
         
     except requests.exceptions.RequestException as e:
         raise HTTPException(status_code=500, detail=f"Google OAuth error: {str(e)}")
