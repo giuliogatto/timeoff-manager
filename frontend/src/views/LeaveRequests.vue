@@ -24,39 +24,15 @@
       <div v-if="leaveRequestsStore.pendingRequests.length > 0" class="request-section">
         <h3>{{ $t('leaveRequests.pendingRequests') }}</h3>
         <div class="requests-grid">
-          <div 
-            v-for="request in leaveRequestsStore.pendingRequests" 
-            :key="request.id" 
-            :class="[
-              'request-card',
-              'pending',
-              { 'highlighted': leaveRequestsStore.isHighlighted(request.id) }
-            ]"
-          >
-            <div class="request-header">
-              <span class="request-type">{{ request.request_type }}</span>
-              <span class="status pending">{{ $t('common.pending') }}</span>
-            </div>
-            <div class="request-details">
-              <p><strong>{{ $t('common.user') }}:</strong> {{ request.user_name || $t('common.unknown') }}</p>
-              <p v-if="request.request_type === 'timeoff'">
-                <strong>{{ $t('leaveRequests.dates') }}:</strong> {{ formatDate(request.start_date) }} - {{ formatDate(request.end_date) }}
-              </p>
-              <p v-else>
-                <strong>{{ $t('common.time') }}:</strong> {{ formatDateTime(request.start_datetime) }} - {{ formatDateTime(request.end_datetime) }}
-              </p>
-              <p v-if="request.reason"><strong>{{ $t('common.reason') }}:</strong> {{ request.reason }}</p>
-              <p><strong>{{ $t('common.created') }}:</strong> {{ formatDateTime(request.created_at) }}</p>
-            </div>
-            <div v-if="authStore.isManager" class="request-actions">
-              <button @click="approveRequest(request.id)" class="approve-btn">
-                {{ $t('common.approve') }}
-              </button>
-              <button @click="rejectRequest(request.id)" class="reject-btn">
-                {{ $t('common.reject') }}
-              </button>
-            </div>
-          </div>
+          <LeaveRequestCard
+            v-for="request in leaveRequestsStore.pendingRequests"
+            :key="request.id"
+            :request="{ ...request, status: 'pending' }"
+            :is-highlighted="leaveRequestsStore.isHighlighted(request.id)"
+            :show-actions="authStore.isManager"
+            @approve="approveRequest"
+            @reject="rejectRequest"
+          />
         </div>
       </div>
 
@@ -64,31 +40,13 @@
       <div v-if="leaveRequestsStore.approvedRequests.length > 0" class="request-section">
         <h3>{{ $t('leaveRequests.approvedRequests') }}</h3>
         <div class="requests-grid">
-          <div 
-            v-for="request in leaveRequestsStore.approvedRequests" 
-            :key="request.id" 
-            :class="[
-              'request-card',
-              'approved',
-              { 'highlighted': leaveRequestsStore.isHighlighted(request.id) }
-            ]"
-          >
-            <div class="request-header">
-              <span class="request-type">{{ request.request_type }}</span>
-              <span class="status approved">{{ $t('common.approved') }}</span>
-            </div>
-            <div class="request-details">
-              <p><strong>{{ $t('common.user') }}:</strong> {{ request.user_name || $t('common.unknown') }}</p>
-              <p v-if="request.request_type === 'timeoff'">
-                <strong>{{ $t('leaveRequests.dates') }}:</strong> {{ formatDate(request.start_date) }} - {{ formatDate(request.end_date) }}
-              </p>
-              <p v-else>
-                <strong>{{ $t('common.time') }}:</strong> {{ formatDateTime(request.start_datetime) }} - {{ formatDateTime(request.end_datetime) }}
-              </p>
-              <p v-if="request.reason"><strong>{{ $t('common.reason') }}:</strong> {{ request.reason }}</p>
-              <p><strong>{{ $t('common.approved') }}:</strong> {{ formatDateTime(request.reviewed_at) }}</p>
-            </div>
-          </div>
+          <LeaveRequestCard
+            v-for="request in leaveRequestsStore.approvedRequests"
+            :key="request.id"
+            :request="{ ...request, status: 'approved' }"
+            :is-highlighted="leaveRequestsStore.isHighlighted(request.id)"
+            :show-actions="false"
+          />
         </div>
       </div>
 
@@ -96,31 +54,13 @@
       <div v-if="leaveRequestsStore.rejectedRequests.length > 0" class="request-section">
         <h3>{{ $t('leaveRequests.rejectedRequests') }}</h3>
         <div class="requests-grid">
-          <div 
-            v-for="request in leaveRequestsStore.rejectedRequests" 
-            :key="request.id" 
-            :class="[
-              'request-card',
-              'rejected',
-              { 'highlighted': leaveRequestsStore.isHighlighted(request.id) }
-            ]"
-          >
-            <div class="request-header">
-              <span class="request-type">{{ request.request_type }}</span>
-              <span class="status rejected">{{ $t('common.rejected') }}</span>
-            </div>
-            <div class="request-details">
-              <p><strong>{{ $t('common.user') }}:</strong> {{ request.user_name || $t('common.unknown') }}</p>
-              <p v-if="request.request_type === 'timeoff'">
-                <strong>{{ $t('leaveRequests.dates') }}:</strong> {{ formatDate(request.start_date) }} - {{ formatDate(request.end_date) }}
-              </p>
-              <p v-else>
-                <strong>{{ $t('common.time') }}:</strong> {{ formatDateTime(request.start_datetime) }} - {{ formatDateTime(request.end_datetime) }}
-              </p>
-              <p v-if="request.reason"><strong>{{ $t('common.reason') }}:</strong> {{ request.reason }}</p>
-              <p><strong>{{ $t('common.rejected') }}:</strong> {{ formatDateTime(request.reviewed_at) }}</p>
-            </div>
-          </div>
+          <LeaveRequestCard
+            v-for="request in leaveRequestsStore.rejectedRequests"
+            :key="request.id"
+            :request="{ ...request, status: 'rejected' }"
+            :is-highlighted="leaveRequestsStore.isHighlighted(request.id)"
+            :show-actions="false"
+          />
         </div>
       </div>
     </div>
@@ -212,6 +152,7 @@ import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '../stores/auth'
 import { useLeaveRequestsStore } from '../stores/leaveRequests'
+import LeaveRequestCard from '../components/LeaveRequestsCard.vue'
 
 const { t } = useI18n()
 
@@ -244,16 +185,6 @@ onMounted(async () => {
     console.log('User is not authenticated')
   }
 })
-
-const formatDate = (dateString) => {
-  if (!dateString) return 'N/A'
-  return new Date(dateString).toLocaleDateString()
-}
-
-const formatDateTime = (dateTimeString) => {
-  if (!dateTimeString) return 'N/A'
-  return new Date(dateTimeString).toLocaleString()
-}
 
 const createRequest = async () => {
   try {
@@ -374,122 +305,6 @@ const resetForm = () => {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 20px;
-}
-
-.request-card {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 20px;
-  background: white;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.request-card.pending {
-  border-left: 4px solid #f39c12;
-}
-
-.request-card.approved {
-  border-left: 4px solid #27ae60;
-}
-
-.request-card.rejected {
-  border-left: 4px solid #e74c3c;
-}
-
-.request-card.highlighted {
-  animation: highlight-pulse 2s ease-in-out;
-  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
-  border: 2px solid #3498db;
-}
-
-@keyframes highlight-pulse {
-  0% {
-    transform: scale(1);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  }
-  50% {
-    transform: scale(1.02);
-    box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
-  }
-  100% {
-    transform: scale(1);
-    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
-  }
-}
-
-.request-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.request-type {
-  background-color: #3498db;
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  text-transform: uppercase;
-}
-
-.status {
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: bold;
-}
-
-.status.pending {
-  background-color: #f39c12;
-  color: white;
-}
-
-.status.approved {
-  background-color: #27ae60;
-  color: white;
-}
-
-.status.rejected {
-  background-color: #e74c3c;
-  color: white;
-}
-
-.request-details p {
-  margin: 8px 0;
-  color: #2c3e50;
-}
-
-.request-actions {
-  margin-top: 15px;
-  display: flex;
-  gap: 10px;
-}
-
-.approve-btn {
-  background-color: #27ae60;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.approve-btn:hover {
-  background-color: #229954;
-}
-
-.reject-btn {
-  background-color: #e74c3c;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.reject-btn:hover {
-  background-color: #c0392b;
 }
 
 .empty-state {
