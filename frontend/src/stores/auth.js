@@ -129,7 +129,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  // Debug method to test token expiration (remove in production)
+  // Debug method to test token expiration (removed in production)
   const testTokenExpiration = async () => {
     console.log('🧪 Testing token expiration...')
     await forceLogout('Manual test')
