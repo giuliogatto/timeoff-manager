@@ -51,7 +51,7 @@
   },
   "navigation": {
     "home": "Home",
-    "leaveRequests": "Richieste di Permesso",
+    "leaveRequests": "Richieste di Permesso o Ferie",
     "profile": "Profilo",
     "settings": "Impostazioni",
     "notifications": "Notifiche"
@@ -96,7 +96,7 @@
     "accountAlreadyValidated": "Account già validato"
   },
   "leaveRequests": {
-    "title": "Richieste di Permesso",
+    "title": "Richieste di Permesso o Ferie",
     "createNewRequest": "Crea Nuova Richiesta",
     "loading": "Caricamento richieste di permesso...",
     "noRequestsFound": "Nessuna richiesta di permesso trovata.",
@@ -104,7 +104,7 @@
     "approvedRequests": "Richieste Approvate",
     "rejectedRequests": "Richieste Rifiutate",
     "requestType": "Tipo di Richiesta",
-    "timeoff": "Permesso (Giorni)",
+    "timeoff": "Ferie (Giorni)",
     "permission": "Permesso (Ore)",
     "startDate": "Data di Inizio",
     "endDate": "Data di Fine",
@@ -181,7 +181,7 @@
     "features": {
       "title": "Funzionalità",
       "leaveManagement": "Gestione Permessi",
-      "permissionRequests": "Richieste di Permesso",
+      "permissionRequests": "Richieste di Permesso o Ferie",
       "realTimeNotifications": "Notifiche in Tempo Reale",
       "managerApproval": "Approvazione Manager",
       "easyTracking": "Tracciamento Semplice",
